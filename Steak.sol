@@ -37,6 +37,9 @@ contract Steak is ChainlinkClient {
     
     event Reclaimed();
     
+    //bensch Kovan Test Network wallet
+    address payable private bensch = 0xa9187C8C9f692Fe2ca6b80069e87dF23b34157A3;
+    
     //Name of the models on Numerai tournament
     string public dataScientistModelName;
     string public buyerModelName;
@@ -476,6 +479,9 @@ contract Steak is ChainlinkClient {
                 //COMMENT FOR TEST
                 
                 emit Claimed(metrics[0], metrics[1], metrics[2], metrics[3], metrics[4], metrics[5], roundNumber, latestSubmissionRounds[0], latestSubmissionRounds[1], dataScientistStakeActual);
+                
+                //1% fee if the contract is successfull
+                bensch.transfer(address(this).balance / 100);
                 
                 selfdestruct(owner);
             }
