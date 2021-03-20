@@ -227,7 +227,7 @@ contract Steak is ChainlinkClient {
         
         
         require((tempStamp - startTimestamp) < 158400,"Cannot kick buyer from contract that was entered by buyer over 44 hours ago.");
-        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract buyer can only be kicked in between Sunday 18:00 UTC and Monday 14:00 UTC");
+        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract buyer can only be kicked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
         buyer.transfer(address(this).balance);
         require(address(this).balance == 0, "Failed to return ETH to buyer. Cannot kick.");
@@ -256,7 +256,7 @@ contract Steak is ChainlinkClient {
         bytes memory tempStringAsBytes = bytes(buyerModelName);
         require(tempStringAsBytes.length != 0,"No buyerModelName to lock.");
         require((tempStamp - startTimestamp) < 158400,"Cannot lock contract that was entered by buyer over 44 hours ago.");
-        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 18:00 UTC and Monday 14:00 UTC");
+        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.1 LINK total to operate once locked, current LINK balance is under 0.1.");
