@@ -124,16 +124,19 @@
         <div id="sellerTut" class="tab-pane fade">
             <h3 class = "sub-header">Submission Seller</h3>
             <br/>
-            <h4 class = "sub-header">Finding a Buyer</h3>
+            <h4 class = "sub-header">Setting up Meta Mask</h4>
+            <p>Click <a data-toggle="modal" data-target="#metaMaskRequiredModal">here</a></p>
+            <br/>
+            <h4 class = "sub-header">Finding a Buyer</h4>
             <p>Sellers cannot acheive the sale of a model's submission using this page alone, instead they must first find a buyer who wishes to buy their model submission in a secure manner through Steak. The buyer and seller must make contact and exchange information through an external platform. A buyer needs an upload only API key for the seller's Numer.ai account so that they can submit their model's predictions on the seller's account.</p>
             <br/>
-            <h4 class = "sub-header">Required External Tools</h3>
+            <h4 class = "sub-header">Required External Tools</h4>
             <p>To create a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH and CHAIN to deploy a contract (1.1 CHAIN so the contract can execute correctly and some ETH for gas).</p>
             <br/>
-            <h4 class = "sub-header">Parameters When Deploying</h3>
+            <h4 class = "sub-header">Parameters When Deploying</h4>
             <p> There are three parameters that go into deploying a Steak contract, Model Name (the name of the model whos submissions are being sold), ETH Cost (how much Ethereum the buyer will pay to have you submit on their behalf), and NMR Stake Promise (The minimum amount of NMR the buyer wants you to stake on the same submission).</p>
             <br/>
-            <h4 class = "sub-header">Timing Considerations</h3>
+            <h4 class = "sub-header">Timing Considerations</h4>
             <p> Steak contracts are not subsciption or long term agreements, they are for facilitating purchase of one round of Numerai submission from a data scientist. The smart contract that determines whether the buyer is paid or a refund is given(in the case that the seller's model does not receive an identical submission for identical round) is time sensitive after a buyer registers their model name and pays in ETH. Sellers must claim their reward within a small window(only a few days) following the first score release for the contract round. Contracts setup is also time sensitive and must happen the weekend before the first scores for a round are released. Below is a calendar of when different contract actions are valid for reference.</p>
             <br/>
             <h4 class = "sub-header">Seller Contract Actions</h4>
@@ -145,13 +148,16 @@
         <div id="buyerTut" class="tab-pane fade in active">
             <h3 class = "sub-header">Submission Buyer</h3>
             <br/>
-            <h4 class = "sub-header">Finding a Seller</h3>
+            <h4 class = "sub-header">Setting up Meta Mask</h4>
+            <p>Click <a data-toggle="modal" data-target="#metaMaskRequiredModal">here</a></p>
+            <br/>
+            <h4 class = "sub-header">Finding a Seller</h4>
             <p>A buyer must seek out sellers on places like the Numer.ai forum, Numer.ai rocketchat, or platforms like Twitter to discuss pricing, how much you want to see the seller stake on their own model, and send an API upload key to the seller.</p>
             <br/>
-            <h4 class = "sub-header">Required External Tools</h3>
+            <h4 class = "sub-header">Required External Tools</h4>
             <p>To enter a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH to pay for gas fees and the reward given to the seller upon completion of the contract.</p>
             <br/>
-            <h4 class = "sub-header">Timing Considerations</h3>
+            <h4 class = "sub-header">Timing Considerations</h4>
             <p>Steak contracts are not subsciption or long term agreements, they are for facilitating purchase of one round of Numerai submission from a data scientist. The smart contract that determines whether the buyer is paid or a refund is given(in the case that the seller's model does not receive an identical submission for identical round) is time sensitive. You must register for the contract you wish to enter with a seller between Saturday 18:00 UTC and Sunday 24:00 UTC the weekend before the first scores for that Numerai round are released. You can reclaim your ETH prize you offered to the seller if they fail to upload their predictions with your API keys, the first Monday and onward after scores were posted for the round are valid days to reclaim your ETH. Below is a calendar of when different contract actions are valid for reference.</p>
             <br/>
             <h4 class = "sub-header">Buyer Contract Actions</h4>
