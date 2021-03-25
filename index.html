@@ -14,7 +14,7 @@
  
   <body class="container"> 
 
-    <h1 class="page-header">Steak Web App</h1>
+    <h1 class="page-header">Steak Web App Kovan Test Network</h1>
     <h4 class = "sub-header">An external staking Ethereum contract and webapp for the <a href = "https://numer.ai/tournament" target="_blank">Numer.ai</a> tournament.</h4>
     <div class="row">
 
@@ -161,21 +161,44 @@
         </div>
     </div>
 </div>
-    <div id = "gasEstimationFailedModal" class="modal fade" tabindex="-1" role="dialog">
+<div id = "gasEstimationFailedModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Gas Estimation for Action Failed </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Execution will likely fail, expending ETH and not acheiving desired result. Do you want to continue anyway?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick = "modalPrimary()">Cancel Action</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick = "modalSecondary()">Attempt Action Anyway</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div id = "metaMaskRequiredModal" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Gas Estimation for Action Failed </h5>
+              <h5 class="modal-title">MetaMask Kovan Test Network Connection Required </h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-              <p>Execution will likely fail, expending ETH and not acheiving desired result. Do you want to continue anyway?</p>
+              <p>Chain transactions are sent through the <a href = "https://metamask.io/download" target = "_blank">MetaMask</a> browser extension, this page cannot function without a MetaMask connection to the Kovan Test Network. You will also need Kovan Test Network Ethereum and Chainlink (has no value and is only for testing) which you can get <a href = "https://gitter.im/kovan-testnet/faucet" target = "_blank">here(ETH)</a> and <a href = "https://kovan.chain.link/" target = "_blank">here(LINK)</a>.</p>
+              <div class="row text-center">
+                <img src="correctnetwork.jpg">
+              </div>
+            
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" onclick = "modalPrimary()">Cancel Action</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick = "modalSecondary()">Attempt Action Anyway</button>
+              <button type="button" class="btn btn-primary"  data-toggle="modal" data-target= "#metaMaskRequiredModal">Close</button>
             </div>
           </div>
         </div>
