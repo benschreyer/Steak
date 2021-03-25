@@ -118,6 +118,11 @@ function setUpCheck(view)
     $('#metaMaskRequiredModal').modal('toggle');
     return false;
    }
+   if(!view && !contract)
+   {
+    $('#contractRequiredModal').modal('toggle');
+    return false;
+   }
    return true;
 }
 
