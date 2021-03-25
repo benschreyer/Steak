@@ -96,8 +96,39 @@ function setup() {
 }//, 100);
 
 
+function setUpCheck(view)
+{
+  if(!account && !view)
+  {
+    $('#metaMaskRequiredModal').modal('toggle');
+    return false;
+  }
+  if(!web3)
+   {
+     
+    $('#metaMaskRequiredModal').modal('toggle');
+    return false;
+   }
+   if(window.ethereum)
+   {
+     console.log("webeth");
+   }
+   else
+   {
+    $('#metaMaskRequiredModal').modal('toggle');
+    return false;
+   }
+   return true;
+}
+
 function retreiveContract()
 {
+
+  if(!setUpCheck(true))
+  {
+    return;
+  }
+
   contractAddress = $("#newInfo").val();
   contract = new web3.eth.Contract(abi, $("#newInfo").val());
   console.log(contract);
@@ -204,8 +235,15 @@ function sendWrapper(method,options)
   });
  }
 
+
+
 function registerBuyerName()
 {
+  if(!setUpCheck(false))
+  {
+    return;
+  }
+
   actionDesc = "Register Buyer Name.";
   toTransact = contract.methods.registerBuyerModelName($("#buyerModelNameInput").val());
   gasEstimateCheckModalWrapper(toTransact,function()
@@ -227,6 +265,10 @@ function registerBuyerName()
 
 function reclaim()
 {
+  if(!setUpCheck(false))
+  {
+    return;
+  }
   actionDesc = "Reclaim.";
   toTransact = contract.methods.reclaim();
   gasEstimateCheckModalWrapper(toTransact, function()
@@ -240,6 +282,10 @@ function reclaim()
 
 function kick()
 {
+  if(!setUpCheck(false))
+  {
+    return;
+  }
   actionDesc = "Kick.";
   toTransact = contract.methods.kick();
   gasEstimateCheckModalWrapper(toTransact, function()
@@ -253,6 +299,10 @@ function kick()
 
 function lock()
 {
+  if(!setUpCheck(false))
+  {
+    return;
+  }
   actionDesc = "Lock.";
   toTransact = contract.methods.lock();
   gasEstimateCheckModalWrapper(toTransact, function()
@@ -265,6 +315,10 @@ function lock()
 }
 function claim()
 {
+  if(!setUpCheck(false))
+  {
+    return;
+  }
   actionDesc = "Claim.";
   toTransact = contract.methods.claim();
   gasEstimateCheckModalWrapper(toTransact, function()
@@ -278,6 +332,10 @@ function claim()
 
 function deploy()
 {
+  if(!setUpCheck(false))
+  {
+    return;
+  }
   txTemp = document.createElement("li");
   var bcr = bc;
   toDeploy = new web3.eth.Contract(abi,{from:account, data:bcr});
@@ -301,7 +359,7 @@ function deploy()
 window.addEventListener('load', () => {
 
   setup();
-  $("#metaMaskRequiredModal").on("hidden.bs.modal",setup);
+  //$("#metaMaskRequiredModal").on("hidden.bs.modal",setup);
   
   
 });
