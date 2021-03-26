@@ -98,31 +98,31 @@ function setup() {
 
 function setUpCheck(view)
 {
-  if(!account && !view)
-  {
-    $('#metaMaskRequiredModal').modal('toggle');
-    return false;
-  }
+ 
   if(!web3)
    {
-     
+    console.log("not web3");
     $('#metaMaskRequiredModal').modal('toggle');
     return false;
    }
    if(window.ethereum)
    {
+    console.log("wind eth");
      console.log("webeth");
    }
    else
    {
+    console.log("not wind eth");
     $('#metaMaskRequiredModal').modal('toggle');
     return false;
    }
    if(!view && !contract)
    {
+    console.log("not view not cont");
     $('#contractRequiredModal').modal('toggle');
     return false;
    }
+   console.log("true ret");
    return true;
 }
 
@@ -237,7 +237,13 @@ function sendWrapper(method,options)
           modalDecision = true;
       });
       
-  });
+  }).then(
+
+    function()
+    {
+      runIfAlternate(); 
+    }
+  );
  }
 
 
@@ -324,6 +330,10 @@ function claim()
   {
     return;
   }
+  console.log("contract");
+  console.log(contract);
+  console.log("account");
+  console.log(account);
   actionDesc = "Claim.";
   toTransact = contract.methods.claim();
   gasEstimateCheckModalWrapper(toTransact, function()
