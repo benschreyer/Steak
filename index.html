@@ -88,8 +88,8 @@ function setup() {
 } //, 100);
 
 
-function setUpCheck(view) {
-
+function setUpCheck(viewB) {
+    console.log(viewB);
     if (!web3) {
         console.log("not web3");
         $('#metaMaskRequiredModal').modal('toggle');
@@ -103,7 +103,9 @@ function setUpCheck(view) {
         $('#metaMaskRequiredModal').modal('toggle');
         return false;
     }
-    if (!view && !contract) {
+    if (!viewB && !contract) {
+
+      console.log(viewB);
         console.log("not view not cont");
         $('#contractRequiredModal').modal('toggle');
         return false;
@@ -113,11 +115,11 @@ function setUpCheck(view) {
 }
 
 function retreiveContract() {
-
+    console.log("true retA");
     if (!setUpCheck(true)) {
         return;
     }
-
+    console.log("true retB");
     contractAddress = $("#newInfo").val();
     contract = new web3.eth.Contract(abi, $("#newInfo").val());
     console.log(contract);
@@ -338,7 +340,7 @@ function claim() {
 }
 
 function deploy() {
-    if (!setUpCheck(false)) {
+    if (!setUpCheck(true)) {
         return;
     }
     txTemp = document.createElement("li");
