@@ -120,8 +120,9 @@ contract Steak is ChainlinkClient {
     {
         
         birthStamp = now;
-
-        
+    
+        //Not a possible stake value on Numer.ai, used to give the variable a value for being unitialized
+        dataScientistStakeActual = 1;
         //state variables
         locked = false;
         verified = false;
