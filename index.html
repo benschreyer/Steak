@@ -113,13 +113,34 @@
       </div>
 			</div>
       <div class="col-sm-6">
-				<h3 class="page-header">How to Use Steak<a href = "https://github.com/benschreyer/Steak" target = "_blank"><svg  style ="float:right" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></a></h3>
+				<div><h3 class="page-header">How to Use Steak<a href = "https://github.com/benschreyer/Steak" target = "_blank"><svg  style ="float:right" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></a><i style = "float:right;margin-right:1vw">Steak for <a href = "https://numer.ai/">Numer.ai</a></i></h3></div>
 				<ul class="nav nav-tabs">
+					<li class="active"><a href="#overviewTut" data-toggle="tab">Overview</a></li>
 					<li ><a href="#sellerTut" data-toggle="tab">Seller</a></li>
-					<li class="active"><a href="#buyerTut" data-toggle="tab">Buyer</a></li>
+					<li><a href="#buyerTut" data-toggle="tab">Buyer</a></li>
 				</ul>
 				<div class="tab-content">
+
+					<div id="overviewTut" class="tab-pane fade in active" style="height:38vh;
+                    overflow-y: scroll;">
+                        <h3 class="sub-header">Overview</h3>
+						<br/>
+
+						<h4 class="sub-header">What is Steak?</h4>
+						<p>Steak is a web interface and smart contract that allow data scientists competing in the <a href = "https://numer.ai/">Numer.ai</a> tournament to sell their weekly submissions for <a href="https://coinmarketcap.com/currencies/ethereum/">Ethereum</a> to other holders of NMR. Contracts are created by sellers on a weekly basis in line with Numer.ai's weekly submission structure and resolve after about a week (see calendar). Steak is differentiated from any other private agreement to sell Numer.ai submissions in that it uses <a href = "https://chain.link/">Chainlink</a> calls to Numerai's API to verify that the seller has upheld their promise to upload the correct predictions on time and stake a certain amount of their own <a href = "https://coinmarketcap.com/currencies/numeraire/">Numeraire</a> on the same model. If the seller fails to uphold their promise not only will their reputation be reduced but the Ethereum you paid for their submission will be refunded to your account.</p>
+						<br/>
+						<h4 class="sub-header">Why not Steak?</h4>
+						<p>Holding Numeraire like holding any crypto currency is highly risky and exposes you to a large amount of volatility (Numeraires prices have essentially doubled and then been cut in half over the past few weeks as I am writing this). This applies even more so for Numeraire since a company controls a large amount of the available Numeraire and gives the coin most of its value as a tool for datascientists. If Numerai the company was to fail or lose the trust of data scientists it would probably be enough to destroy almost all value Numeraire holds. On top of currency risk you must trust the modeling ability of a seller and the amount of stake (amount of Numeraire they are willing to lose) they put on their model. Numerai can destroy up to 25% of your staked Numeraire in one week if your submission performance is bad enough (this has happened to many stakers). Not only is the risk of entering the tournament high, but your knowledge to asses that risk is limited by what the seller discloses to you about their model and how honest they are about their confidence in it. Finally the Steak platform and smart contract have so far not been heavily tested, and could easily have bugs or exploits that could result in total loss of a buyer's refund or a seller's payment, or allow a buyer or a seller to completely scam the other party with damage only to their online (and possibly anonymous) reputation at risk. I could also give up on this project at any time and stop updating it, leaving you to hold your Numeraire speculatively, try to find a different way to buy submissions, or sell your Numeraire.</p>
+						<br/>
+						<h4 class="sub-header">Why Steak?</h4>
+						<p>If you can stomach that entire last paragraph (losing your entire investment in an instant etc), then you may want to use Steak. I wont do the math since the numbers will change over time and there is plenty of subjectivity to be had, but Numerai continues to attract data scientists submissions and stakes due to the "crypto returns" (high risk high reward) they provide to stakers. For data scientists, you may choose to use Steak to supplement your own staking Numeraire, or to get an extra stream of income from your models in Ethereum.</p>
+						<br/>
+						<h4 class="sub-header">Getting Started</h4>
+						<p> Visit the <a href = "https://docs.numer.ai/tournament/learn">Numer.ai Docs</a> aswell as their forums or Rocket Chat to ask questions, and learn about how Numerai works. Then move to the "Buyer" or "Seller" tab to learn about using the Steak interface.</p>
+
+						
+					</div>
 
                     <div id="sellerTut" class="tab-pane fade" style="height:38vh;
                     overflow-y: scroll;">
@@ -132,7 +153,7 @@
 						<p>Sellers cannot acheive the sale of a model's submission using this page alone, instead they must first find a buyer who wishes to buy their model submission in a secure manner through Steak. The buyer and seller must make contact and exchange information through an external platform. A buyer needs an upload only API key for the seller's Numer.ai account so that they can submit their model's predictions on the seller's account.</p>
 						<br/>
 						<h4 class="sub-header">Required External Tools</h4>
-						<p>To create a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH and CHAIN to deploy a contract (1.1 CHAIN so the contract can execute correctly and some ETH for gas).</p>
+						<p>To create a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH and CHAIN to deploy a contract (1.1 CHAIN sent to the Steak contract so the contract can confirm your payout and some ETH for gas).</p>
 						<br/>
 						<h4 class="sub-header">Parameters When Deploying</h4>
 						<p> There are three parameters that go into deploying a Steak contract, Model Name (the name of the model whos submissions are being sold), ETH Cost (how much Ethereum the buyer will pay to have you submit on their behalf), and NMR Stake Promise (The minimum amount of NMR the buyer wants you to stake on the same submission).</p>
@@ -146,7 +167,7 @@
 							<h4 class="sub-header">Locking</h4> <b>Locking</b> is the second of three actions, and confirms that the seller will be submitting predictions on the buyer's Numerai account and claiming their payment in ETH specified at the Deployment of the contract along with spending 0.1 CHAIN to retreive the buyer's model ID to allow API submission by the seller. You cannot kick a buyer once a contract has been locked. Locking must occur between Sunday 00:00 UTC and Monday 14:00 UTC and must happen before 44 hours have elapsed since the buyer registered (called the Start Date).
 							<h4 class="sub-header">Claiming</h4> Finally, <b>Claiming</b>, Claiming occurs after the first Numerai scores have been released for the round which the contract was deployed in and rewards the seller with their specified ETH if the contract can confirm through Numerai API calls that they did submit their predictions to the buyer and seller's models for the most recent round and staked at least as much as they promised to stake. </p>
 					</div>
-					<div id="buyerTut" class="tab-pane fade  in active" style="height:38vh;
+					<div id="buyerTut" class="tab-pane fade" style="height:38vh;
           overflow-y: scroll;">
 						<h3 class="sub-header">Submission Buyer</h3>
 						<br/>
