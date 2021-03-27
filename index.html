@@ -1,247 +1,290 @@
 <!DOCTYPE html>
-<html >
-  <head>
-    <title>Steak on Kovan Test Network</title>
- 
-    <link href='bootstrap.css' rel='stylesheet' type='text/css'>
-    <script src="jquery-3.1.1.slim.min.js"></script>
-    <script src="web3.1.3.4.min.js"></script>
-    <script src="bootstrap.3.4.1.min.js"></script>
+<html>
+
+<head>
+	<title>Steak on Kovan Test Network</title>
+	<link href='bootstrap.css' rel='stylesheet' type='text/css'>
+	<script src="jquery-3.1.1.slim.min.js"></script>
+	<script src="web3.1.3.4.min.js"></script>
+	<script src="bootstrap.3.4.1.min.js"></script>
+	<script src="./index.js"></script>
+</head>
+
+<body class="container-fluid">
+	<div class="container-fluid">
+		<h1 class="page-header">Steak Web App Kovan Test Network</h1>
+		<h4 class="sub-header">An external staking Ethereum contract and webapp for the <a href="https://numer.ai/tournament" target="_blank">Numer.ai</a> tournament.</h4>
+		<div class="row">
+			<div class="col-sm-4">
+				<h1 class="page-header">View Contract</h1>
+				<form class="form-inline" role="form">
+					<div class="form-group">
+						<table>
+							<tr>
+								<td>
+									<label for="newInfo">Address:</label>
+								</td>
+								<td>
+									<input class="form-control" id="newInfo"> </td>
+							</tr>
+						</table>
+					</div> <a href="#" onclick="retreiveContract()" class="btn btn-primary">Retreive</a> </form>
+				<br/>
+				<ul class="list-group">
+					<li class="list-group-item" id="addressLabel">Contract Address:</li>
+					<li class="list-group-item" id="dataScientistModelNameLabel">Data Scientist Model Name:
+						<a href="#"></a>
+					</li>
+					<li class="list-group-item" id="costETHLabel">Contract Cost:</li>
+					<li class="list-group-item" id="dataScientistStakePromiseLabel">Promised Data Scientist Stake:</li>
+					<li class="list-group-item" id="dataScientistStakeActualLabel">Actual Data Scientist Stake:</li>
+					<li class="list-group-item" id="lockedLabel">Locked:</li>
+					<li class="list-group-item" id="roundNumberLabel">Round Number:</li>
+					<li class="list-group-item" id="birthStampLabel">Birth Date:</li>
+					<li class="list-group-item" id="startStampLabel">Start Date:</li>
+					<li class="list-group-item" id="buyerModelNameLabel">Buyer Model Name:
+						<a href="#"></a>
+					</li>
+					<li class="list-group-item" id="buyerModelIdLabel">Buyer Model Id:</li>
+					<li class="list-group-item" id="buyerModelCORRLabel">Buyer Model Live CORR:</li>
+					<li class="list-group-item" id="buyerModelMMCLabel">Buyer Model Live MMC:</li>
+					<li class="list-group-item" id="buyerModelFNCLabel">Buyer Model Live FNC:</li>
+					<li class="list-group-item" id="sellerModelCORRLabel">Seller Model Live CORR:</li>
+					<li class="list-group-item" id="sellerModelMMCLabel">Seller Model Live MMC:</li>
+					<li class="list-group-item" id="sellerModelFNCLabel">Seller Model Live FNC:</li>
+				</ul>
+			</div>
+			<div class="col-sm-3">
+				<h1 class="page-header">Actions</h1>
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#buyer" data-toggle="tab">Buyer</a></li>
+					<li><a href="#owner" data-toggle="tab">Seller</a></li>
+					<li><a href="#deploy" data-toggle="tab">Deploy</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="buyer" class="tab-pane fade in active">
+						<form class="form-inline" role="form">
+							<ul class="list-group">
+								<li class="list-group-item"><a href="#" onclick="registerBuyerName()" class="btn btn-primary">Register Your Model</a>
+									<br/>
+									<br/>
+									<label>Model Name: </label>
+									<input class="form-control" id="buyerModelNameInput">
+								</li>
+								<li class="list-group-item"><a href="#" onclick="reclaim()" class="btn btn-primary">Reclaim</a></li>
+							</ul>
+						</form>
+					</div>
+					<div id="owner" class="tab-pane fade">
+						<form class="form-inline" role="form">
+							<ul class="list-group">
+								<li class="list-group-item"><a href="#" onclick="kick()" class="btn btn-primary">Kick</a></li>
+								<li class="list-group-item"><a href="#" onclick="lock()" class="btn btn-primary">Lock</a></li>
+								<li class="list-group-item"><a href="#" onclick="claim()" class="btn btn-primary">Claim</a></li>
+							</ul>
+						</form>
+					</div>
+					<div id="deploy" class="tab-pane fade">
+						<form class="form-inline" role="form">
+							<ul class="list-group">
+								<li class="list-group-item"><a href="#" onclick="deploy()" class="btn btn-primary">Deploy</a>
+									<br/>
+									<br/>
+									<label>Model Name: </label>
+									<input class="form-control" id="dataScientistModelNameInput">
+									<br/>
+									<br/>
+									<label>ETH Cost: </label>
+									<input class="form-control" id="costETHInput">
+									<br/>
+									<br/>
+									<label>NMR Stake Promise:</label>
+									<input class="form-control" id="dataScientistStakePromiseInput"> </li>
+							</ul>
+						</form>
+					</div>
+				</div>
+				<h3 class="sub-header">Transaction log</h3>
+        <div style="height:54vh;
+        overflow-y: scroll;">
+				<ul class="list-group" id="transactionLog"> </ul>
+      </div>
+			</div>
+      <div class="col-sm-5">
+				<h1 class="page-header">How to Use Steak</h1>
+				<ul class="nav nav-tabs">
+					<li ><a href="#sellerTut" data-toggle="tab">Seller</a></li>
+					<li class="active"><a href="#buyerTut" data-toggle="tab">Buyer</a></li>
+				</ul>
+				<div class="tab-content">
+
+                    <div id="sellerTut" class="tab-pane fade" style="height:38vh;
+                    overflow-y: scroll;">
+                        <h3 class="sub-header">Submission Seller</h3>
+						<br/>
+						<h4 class="sub-header">Setting up MetaMask</h4>
+						<p>Click <a data-toggle="modal" data-target="#metaMaskRequiredModal">here</a></p>
+						<br/>
+						<h4 class="sub-header">Finding a Buyer</h4>
+						<p>Sellers cannot acheive the sale of a model's submission using this page alone, instead they must first find a buyer who wishes to buy their model submission in a secure manner through Steak. The buyer and seller must make contact and exchange information through an external platform. A buyer needs an upload only API key for the seller's Numer.ai account so that they can submit their model's predictions on the seller's account.</p>
+						<br/>
+						<h4 class="sub-header">Required External Tools</h4>
+						<p>To create a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH and CHAIN to deploy a contract (1.1 CHAIN so the contract can execute correctly and some ETH for gas).</p>
+						<br/>
+						<h4 class="sub-header">Parameters When Deploying</h4>
+						<p> There are three parameters that go into deploying a Steak contract, Model Name (the name of the model whos submissions are being sold), ETH Cost (how much Ethereum the buyer will pay to have you submit on their behalf), and NMR Stake Promise (The minimum amount of NMR the buyer wants you to stake on the same submission).</p>
+						<br/>
+						<h4 class="sub-header">Timing Considerations</h4>
+						<p> Steak contracts are not subsciption or long term agreements, they are for facilitating purchase of one round of Numerai submission from a data scientist. The smart contract that determines whether the buyer is paid or a refund is given(in the case that the seller's model does not receive an identical submission for identical round) is time sensitive after a buyer registers their model name and pays in ETH. Sellers must claim their reward within a small window(only a few days) following the first score release for the contract round. Contracts setup is also time sensitive and must happen the weekend before the first scores for a round are released. Below is a calendar of when different contract actions are valid for reference.</p>
+						<br/>
+						<h4 class="sub-header">Seller Contract Actions</h4>
+						<p> The seller Deploys the contract initially as discussed above. The seller has three actions they can take on a deployed contract that are all time sensitive and require that a buyer has registered to partake in the contract.
+							<h4 class="sub-header">Kicking</h4> The first is <b>Kicking</b>, Kicking ejects the currently registered buyer from the contract opening up the contract to a new buyer incase a different buyer mistakenly registers for the wrong contract. Kicking must occur between Sunday 00:00 UTC and Monday 14:00 UTC and must happen before 44 hours have elapsed since the buyer registered (called the Start Date).
+							<h4 class="sub-header">Locking</h4> <b>Locking</b> is the second of three actions, and confirms that the seller will be submitting predictions on the buyer's Numerai account and claiming their payment in ETH specified at the Deployment of the contract along with spending 0.1 CHAIN to retreive the buyer's model ID to allow API submission by the seller. You cannot kick a buyer once a contract has been locked. Locking must occur between Sunday 00:00 UTC and Monday 14:00 UTC and must happen before 44 hours have elapsed since the buyer registered (called the Start Date).
+							<h4 class="sub-header">Claiming</h4> Finally, <b>Claiming</b>, Claiming occurs after the first Numerai scores have been released for the round which the contract was deployed in and rewards the seller with their specified ETH if the contract can confirm through Numerai API calls that they did submit their predictions to the buyer and seller's models for the most recent round and staked at least as much as they promised to stake. </p>
+					</div>
+					<div id="buyerTut" class="tab-pane fade  in active" style="height:38vh;
+          overflow-y: scroll;">
+						<h3 class="sub-header">Submission Buyer</h3>
+						<br/>
+						<h4 class="sub-header">Setting up Meta Mask</h4>
+						<p>Click <a data-toggle="modal" data-target="#metaMaskRequiredModal">here</a></p>
+						<br/>
+						<h4 class="sub-header">Finding a Seller</h4>
+						<p>A buyer must seek out sellers on places like the Numer.ai forum, Numer.ai rocketchat, or platforms like Twitter to discuss pricing, how much you want to see the seller stake on their own model, and send an API upload key to the seller.</p>
+						<br/>
+						<h4 class="sub-header">Required External Tools</h4>
+						<p>To enter a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH to pay for gas fees and the reward given to the seller upon completion of the contract.</p>
+						<br/>
+						<h4 class="sub-header">Timing Considerations</h4>
+						<p>Steak contracts are not subsciption or long term agreements, they are for facilitating purchase of one round of Numerai submission from a data scientist. The smart contract that determines whether the buyer is paid or a refund is given(in the case that the seller's model does not receive an identical submission for identical round) is time sensitive. You must register for the contract you wish to enter with a seller between Saturday 18:00 UTC and Sunday 24:00 UTC the weekend before the first scores for that Numerai round are released. You can reclaim your ETH prize you offered to the seller if they fail to upload their predictions with your API keys, the first Monday and onward after scores were posted for the round are valid days to reclaim your ETH. Below is a calendar of when different contract actions are valid for reference.</p>
+						<br/>
+						<h4 class="sub-header">Buyer Contract Actions</h4>
+						<p> The buyer can pay in the ETH cost to register their model name with a sellers contract so that the seller knows which model to submit for. If the seller does not submit equivalent predictions on their model and your model on time you may reclaim your ETH funds back into your MetaMask wallet as specified above. </p>
+					</div>
+				</div>
+
+          <div class="col-sm-5">
+            
+              <h1 class="page-header">Contract Calendar</h1>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="bg-primary">Valid Actions</th>
+                    <th scope="col">Saturday After 18:00 UTC</th>
+                    <th scope="col">Sunday Full UTC</th>
+                    <th scope="col">Monday Before 14:00 UTC</th>
+                    <th scope="col">Tuesday Full UTC</th>
+                    <th scope="col">Wednesday Full UTC</th>
+                    <th scope="col">Thursday Full UTC</th>
+                    <th scope="col">Friday Full UTC</th>
+                    <th scope="col">Saturday Full UTC</th>
+                    <th scope="col">Sunday Full UTC</th>
+                    <th scope="col">Monday Full UTC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">For Buyer</th>
+                    <td class="success">Register Your Model</td>
+                    <td class="success">Register Your Model</td>
+                    <td class="danger">Numerai Submissions Close 14:00 UTC</td>
+                    <td></td>
+                    <td></td>
+                    <td class="danger">First Scores of Round Released</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="success">Reclaim (Valid from here on)</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">For Seller</th>
+                    <td></td>
+                    <td class="info">Kick</td>
+                    <td class="info">Kick</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="info">Claim</td>
+                    <td class="info">Claim</td>
+                    <td class="info">Claim</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"></th>
+                    <td></td>
+                    <td class="info">Lock</td>
+                    <td class="info">Lock</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+			</div>
+
+		</div>
+
     
-    
-    <script src="./index.js"></script>    
-  </head>
- 
-  <body class="container"> 
 
-    <h1 class="page-header">Steak Web App Kovan Test Network</h1>
-    <h4 class = "sub-header">An external staking Ethereum contract and webapp for the <a href = "https://numer.ai/tournament" target="_blank">Numer.ai</a> tournament.</h4>
-    <div class="row">
+	<div id="gasEstimationFailedModal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Gas Estimation for Action Failed </h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+				</div>
+				<div class="modal-body">
+					<p>Execution will likely fail, expending ETH and not acheiving desired result. Do you want to continue anyway?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="modalPrimary()">Cancel Action</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="modalSecondary()">Attempt Action Anyway</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="metaMaskRequiredModal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">MetaMask Kovan Test Network Connection Required </h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+				</div>
+				<div class="modal-body">
+					<p>Chain transactions are sent through the <a href="https://metamask.io/download" target="_blank">MetaMask</a> browser extension, you need the MetaMask extension to view contracts, and an account and currency to interact with them. Make sure to refresh the page after you have setup MetaMask. To get Kovan Test Network Ethereum and Chainlink (has no value and is only for testing) visit <a href="https://app.mycrypto.com/faucet" target="_blank">here(ETH)</a> and <a href="https://kovan.chain.link/" target="_blank">here(LINK)</a>. See a video of how to get setup on Chrome <a href="https://www.youtube.com/watch?v=sOykdVIrJ_U" target="_blank">here</a></a>
+					</p>
+					<div class="row text-center"> <img src="correctnetwork.jpg"> </div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#metaMaskRequiredModal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="contractRequiredModal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">No Contract Loaded</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+				</div>
+				<div class="modal-body">
+					<p>Use the retreive contract menu to load a contract to interact with before attempting to call functions.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#contractRequiredModal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
 
-        <div class = "col-md-6">
-        <h3 class="sub-header">Retreive Contract</h3>
-        <form class="form-inline" role="form">
-          <div class="form-group">
-            <table>
-              <tr>
-                <td><label for="newInfo">Address:</label> </td>
-                <td>
-                  <input class="form-control" id="newInfo">
-                </td>                          
-              </tr>
-            </table>
-          </div>
-          <a href="#" onclick="retreiveContract()" class="btn btn-primary">Retreive</a>
-
-        </form>
-        <br/>
-          <ul class="list-group">
-            <li class="list-group-item" id = "addressLabel">Contract Address:</li>
-            <li class="list-group-item" id = "dataScientistModelNameLabel">Data Scientist Model Name:<a href = "#"></a></li>
-            <li class="list-group-item" id = "costETHLabel">Contract Cost:</li>
-            <li class="list-group-item" id = "dataScientistStakePromiseLabel">Promised Data Scientist Stake:</li>
-            <li class="list-group-item" id = "dataScientistStakeActualLabel">Actual Data Scientist Stake:</li>
-            <li class="list-group-item" id = "lockedLabel">Locked:</li>
-            <li class="list-group-item" id = "roundNumberLabel">Round Number:</li>
-            <li class="list-group-item" id = "birthStampLabel">Birth Date:</li>
-            <li class="list-group-item" id = "startStampLabel">Start Date:</li>
-            <li class="list-group-item" id = "buyerModelNameLabel">Buyer Model Name:<a href = "#"></a></li>
-            <li class="list-group-item" id = "buyerModelIdLabel">Buyer Model Id:</li>
-            
-            <li class="list-group-item" id = "buyerModelCORRLabel">Buyer Model Live CORR:</li>
-            <li class="list-group-item" id = "buyerModelMMCLabel">Buyer Model Live MMC:</li>
-            <li class="list-group-item" id = "buyerModelFNCLabel">Buyer Model Live FNC:</li>
-            
-            <li class="list-group-item" id = "sellerModelCORRLabel">Seller Model Live CORR:</li>
-            <li class="list-group-item" id = "sellerModelMMCLabel">Seller Model Live MMC:</li>
-            <li class="list-group-item" id = "sellerModelFNCLabel">Seller Model Live FNC:</li>
-            
-          </ul>
-       
-      
-
-        </div>
-
-        <div class = "col-md-6">
-        <h3 class="sub-header">Actions</h3>
-        <ul class="nav nav-tabs">
-            <li class = "active"><a href="#buyer" data-toggle="tab">Buyer</a></li>
-            <li><a href="#owner" data-toggle="tab">Seller</a></li>
-            <li><a href="#deploy" data-toggle="tab">Deploy</a></li>
-            
-          </ul>
-
-          <div class="tab-content">
-            <div id="buyer" class="tab-pane fade in active">
-                <form class="form-inline" role="form">
-                    <ul class="list-group">
-                        <li class="list-group-item"><a href="#" onclick="registerBuyerName()" class="btn btn-primary">Register Your Model</a><br/><br/><label>Model Name: </label><input class="form-control" id="buyerModelNameInput"></li>
-                        <li class="list-group-item"><a href="#" onclick="reclaim()" class="btn btn-primary">Reclaim</a></li>
-                    </ul>
-                    
-                    
-                  </form>
-            </div>
-            <div id="owner" class="tab-pane fade">
-                <form class="form-inline" role="form">
-                    <ul class="list-group">
-                        <li class="list-group-item"><a href="#" onclick="kick()" class="btn btn-primary">Kick</a></li>
-                        <li class="list-group-item"><a href="#" onclick="lock()" class="btn btn-primary">Lock</a></li>
-                        <li class="list-group-item"><a href="#" onclick="claim()" class="btn btn-primary">Claim</a></li>
-                    </ul>
-                    
-                    
-                  </form>
-            </div>
-            <div id="deploy" class="tab-pane fade">
-                <form class="form-inline" role="form">
-                    <ul class="list-group">
-                        <li class="list-group-item"><a href="#" onclick="deploy()" class="btn btn-primary">Deploy</a>
-                            <br/><br/><label>Model Name: </label><input class="form-control" id="dataScientistModelNameInput">
-                            <br/><br/><label>ETH Cost: </label><input class="form-control" id="costETHInput">
-                            <br/><br/><label>NMR Stake Promise:</label><input class="form-control" id="dataScientistStakePromiseInput">
-                        
-                        
-                        </li>
-                    </ul>
-                    
-                    
-                  </form>
-            </div>
-
-          </div>
-          <h3 class = "sub-header">Transaction log</h3>
-          <ul class="list-group" id = "transactionLog">
-
-            </ul>
-          </div>
-        </div>
-    </div>    
- 
-    <div class = "row">
-        <h1 class = "page-header">How to Use Steak</h1>
-        <ul class="nav nav-tabs">
-            <li ><a href="#sellerTut" data-toggle="tab">Seller</a></li>
-            <li class = "active"><a href="#buyerTut" data-toggle="tab">Buyer</a></li>
-
-            
-          </ul>
-          
-          <div class="tab-content">
-        
-        <div id="sellerTut" class="tab-pane fade">
-            <h3 class = "sub-header">Submission Seller</h3>
-            <br/>
-            <h4 class = "sub-header">Setting up MetaMask</h4>
-            <p>Click <a data-toggle="modal" data-target="#metaMaskRequiredModal">here</a></p>
-            <br/>
-            <h4 class = "sub-header">Finding a Buyer</h4>
-            <p>Sellers cannot acheive the sale of a model's submission using this page alone, instead they must first find a buyer who wishes to buy their model submission in a secure manner through Steak. The buyer and seller must make contact and exchange information through an external platform. A buyer needs an upload only API key for the seller's Numer.ai account so that they can submit their model's predictions on the seller's account.</p>
-            <br/>
-            <h4 class = "sub-header">Required External Tools</h4>
-            <p>To create a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH and CHAIN to deploy a contract (1.1 CHAIN so the contract can execute correctly and some ETH for gas).</p>
-            <br/>
-            <h4 class = "sub-header">Parameters When Deploying</h4>
-            <p> There are three parameters that go into deploying a Steak contract, Model Name (the name of the model whos submissions are being sold), ETH Cost (how much Ethereum the buyer will pay to have you submit on their behalf), and NMR Stake Promise (The minimum amount of NMR the buyer wants you to stake on the same submission).</p>
-            <br/>
-            <h4 class = "sub-header">Timing Considerations</h4>
-            <p> Steak contracts are not subsciption or long term agreements, they are for facilitating purchase of one round of Numerai submission from a data scientist. The smart contract that determines whether the buyer is paid or a refund is given(in the case that the seller's model does not receive an identical submission for identical round) is time sensitive after a buyer registers their model name and pays in ETH. Sellers must claim their reward within a small window(only a few days) following the first score release for the contract round. Contracts setup is also time sensitive and must happen the weekend before the first scores for a round are released. Below is a calendar of when different contract actions are valid for reference.</p>
-            <br/>
-            <h4 class = "sub-header">Seller Contract Actions</h4>
-            <p>
-                The seller Deploys the contract initially as discussed above. The seller has three actions they can take on a deployed contract that are all time sensitive and require that a buyer has registered to partake in the contract.<h4 class = "sub-header">Kicking</h4> The first is <b>Kicking</b>, Kicking ejects the currently registered buyer from the contract opening up the contract to a new buyer incase a different buyer mistakenly registers for the wrong contract. Kicking must occur between Sunday 00:00 UTC and Monday 14:00 UTC and must happen before 44 hours have elapsed since the buyer registered (called the Start Date).<h4 class = "sub-header">Locking</h4> <b>Locking</b> is the second of three actions, and confirms that the seller will be submitting predictions on the buyer's Numerai account and claiming their payment in ETH specified at the Deployment of the contract along with spending 0.1 CHAIN to retreive the buyer's model ID to allow API submission by the seller. You cannot kick a buyer once a contract has been locked. Locking must occur between Sunday 00:00 UTC and Monday 14:00 UTC and must happen before 44 hours have elapsed since the buyer registered (called the Start Date).<h4 class = "sub-header">Claiming</h4> Finally, <b>Claiming</b>, Claiming occurs after the first Numerai scores have been released for the round which the contract was deployed in and rewards the seller with their specified ETH if the contract can confirm through Numerai API calls that they did submit their predictions to the buyer and seller's models for the most recent round and staked at least as much as they promised to stake.
-            </p>
-        </div>
-
-        <div id="buyerTut" class="tab-pane fade in active">
-            <h3 class = "sub-header">Submission Buyer</h3>
-            <br/>
-            <h4 class = "sub-header">Setting up Meta Mask</h4>
-            <p>Click <a data-toggle="modal" data-target="#metaMaskRequiredModal">here</a></p>
-            <br/>
-            <h4 class = "sub-header">Finding a Seller</h4>
-            <p>A buyer must seek out sellers on places like the Numer.ai forum, Numer.ai rocketchat, or platforms like Twitter to discuss pricing, how much you want to see the seller stake on their own model, and send an API upload key to the seller.</p>
-            <br/>
-            <h4 class = "sub-header">Required External Tools</h4>
-            <p>To enter a Steak contract listing you must have the MetaMask extension installed for your browser and have an account that is funded with enough ETH to pay for gas fees and the reward given to the seller upon completion of the contract.</p>
-            <br/>
-            <h4 class = "sub-header">Timing Considerations</h4>
-            <p>Steak contracts are not subsciption or long term agreements, they are for facilitating purchase of one round of Numerai submission from a data scientist. The smart contract that determines whether the buyer is paid or a refund is given(in the case that the seller's model does not receive an identical submission for identical round) is time sensitive. You must register for the contract you wish to enter with a seller between Saturday 18:00 UTC and Sunday 24:00 UTC the weekend before the first scores for that Numerai round are released. You can reclaim your ETH prize you offered to the seller if they fail to upload their predictions with your API keys, the first Monday and onward after scores were posted for the round are valid days to reclaim your ETH. Below is a calendar of when different contract actions are valid for reference.</p>
-            <br/>
-            <h4 class = "sub-header">Buyer Contract Actions</h4>
-            <p>
-                The buyer can pay in the ETH cost to register their model name with a sellers contract so that the seller knows which model to submit for. If the seller does not submit equivalent predictions on their model and your model on time you may reclaim your ETH funds back into your MetaMask wallet as specified above.
-            </p>
-        </div>
-    </div>
-</div>
-<div id = "gasEstimationFailedModal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Gas Estimation for Action Failed </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Execution will likely fail, expending ETH and not acheiving desired result. Do you want to continue anyway?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick = "modalPrimary()">Cancel Action</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick = "modalSecondary()">Attempt Action Anyway</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-      <div id = "metaMaskRequiredModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">MetaMask Kovan Test Network Connection Required </h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>Chain transactions are sent through the <a href = "https://metamask.io/download" target = "_blank">MetaMask</a> browser extension, 
-                you need the MetaMask extension to view contracts, and an account and currency to interact with them. 
-                Make sure to refresh the page after you have setup MetaMask. To get Kovan Test Network Ethereum and Chainlink (has no value and is only for testing) visit 
-                <a href = "https://app.mycrypto.com/faucet" target = "_blank">here(ETH)</a> and <a href = "https://kovan.chain.link/" target = "_blank">here(LINK)</a>.
-                 See a video of how to get setup on Chrome <a href = "https://www.youtube.com/watch?v=sOykdVIrJ_U" target = "_blank">here</a></a></p>
-              <div class="row text-center">
-                <img src="correctnetwork.jpg">
-              </div>
-            
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary"  data-toggle="modal" data-target= "#metaMaskRequiredModal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id = "contractRequiredModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">No Contract Loaded</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>Use the retreive contract menu to load a contract to interact with before attempting to call functions.</p>
-            
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary"  data-toggle="modal" data-target= "#contractRequiredModal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-
-  </body>
 </html>
