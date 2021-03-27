@@ -120,13 +120,13 @@ function retreiveContract() {
         return;
     }
     console.log("true retB");
-    contractAddress = $("#newInfo").val();
-    contract = new web3.eth.Contract(abi, $("#newInfo").val());
+    contractAddress = $("#newInfo").val().trim();
+    contract = new web3.eth.Contract(abi, $("#newInfo").val().trim());
     console.log(contract);
-    document.getElementById("addressLabel").innerHTML = "Contract Address: " + '<a target="_blank" href = "https://kovan.etherscan.io/address/' + $("#newInfo").val() + '">' + $("#newInfo").val() + "</a>";
+    document.getElementById("addressLabel").innerHTML = "Contract Address: " + '<a target="_blank" href = "https://kovan.etherscan.io/address/' + $("#newInfo").val() + '">' + $("#newInfo").val().trim() + "</a>";
 
     contract.methods.dataScientistModelName().call().then(function(info) {
-        console.log("info: ", contract);
+        
 
         document.getElementById('dataScientistModelNameLabel').innerHTML = "Data Scientist Model Name: " + '<a target="_blank" href = "https://numer.ai/' + String(info) + '">' + String(info) + "</a>";
     });
@@ -134,64 +134,168 @@ function retreiveContract() {
 
 
     contract.methods.costETH().call().then(function(info) {
-        console.log("info: ", contract);
+        
 
         document.getElementById('costETHLabel').innerHTML = "Contract Cost: " + String(info / Math.pow(10, 18)) + " ETH";
         //document.getElementById('costETHLabel').className = document.getElementById('costETHLabel').className +  " text-success";
     });
     contract.methods.dataScientistStakePromise().call().then(function(info) {
-        console.log("info: ", contract);
+        
 
         document.getElementById('dataScientistStakePromiseLabel').innerHTML = "Promised Data Scientist Stake: " + String(info / Math.pow(10, 18)) + " NMR";
     });
 
     contract.methods.dataScientistStakeActual().call().then(function(info) {
-        console.log("info: ", contract);
-
-        document.getElementById('dataScientistStakeActualLabel').innerHTML = "Actual Data Scientist Stake: " + String(info / Math.pow(10, 18)) + " NMR";
+        
+        if(info != 1)
+        {
+            document.getElementById('dataScientistStakeActualLabel').innerHTML = "Actual Data Scientist Stake: " + String(info / Math.pow(10, 18)) + " NMR";
+        }
+        else
+        {
+            document.getElementById('dataScientistStakeActualLabel').innerHTML = "Actual Data Scientist Stake: Not Determined.";
+        }
+        
     });
 
     contract.methods.locked().call().then(function(info) {
-        console.log("info: ", contract);
+        
 
         document.getElementById('lockedLabel').innerHTML = "Locked: " + String(info);
     });
 
     contract.methods.roundNumber().call().then(function(info) {
-        console.log("info: ", contract);
-
-        document.getElementById('roundNumberLabel').innerHTML = "Round Number: " + String(info);
+        
+        if(info != 0)
+        {
+            document.getElementById('roundNumberLabel').innerHTML = "Round Number: " + String(info);
+        }
+        else
+        {
+            document.getElementById('roundNumberLabel').innerHTML = "Round Number: Not Determined";
+        }
     });
 
     contract.methods.birthStamp().call().then(function(info) {
-        console.log("info: ", contract);
+        
         var dateT = new Date(0);
         dateT.setUTCSeconds(info);
         document.getElementById('birthStampLabel').innerHTML = "Birth Date: " + String(dateT);
     });
 
     contract.methods.startTimestamp().call().then(function(info) {
-        console.log("info: ", contract);
+        
         var dateT = new Date(0);
         dateT.setUTCSeconds(info);
-        document.getElementById('startStampLabel').innerHTML = "Start Date: " + String(dateT);
+        console.log(info == 0);
+        if(info != 0 )
+        {
+         document.getElementById('startStampLabel').innerHTML = "Start Date: " + String(dateT);
+        }
+        else
+        {
+            document.getElementById('startStampLabel').innerHTML = "Start Date: Not Determined";
+        }
     });
 
     contract.methods.buyerModelName().call().then(function(info) {
-        console.log("info: ", contract);
-
-        document.getElementById('buyerModelNameLabel').innerHTML = "Buyer Model Name: " + '<a target="_blank" href = "https://numer.ai/' + String(info) + '">' + String(info) + "</a>";
+        
+        if(info.length > 0)
+        {
+            document.getElementById('buyerModelNameLabel').innerHTML = "Buyer Model Name: " + '<a target="_blank" href = "https://numer.ai/' + String(info) + '">' + String(info) + "</a>";
+        }
+        else
+        {
+            document.getElementById('buyerModelNameLabel').innerHTML = "Buyer Model Name: Not Determined";
+        }
     });
 
     contract.methods.buyerModelId().call().then(function(info) {
-        console.log("info: ", contract);
+        
+        if(info.length > 0)
+        {
+            document.getElementById('buyerModelIdLabel').innerHTML = "Buyer Model Id: " + String(info);
+        }
+        else
+        {
+            document.getElementById('buyerModelIdLabel').innerHTML = "Buyer Model Id: Not Determined";
+        }
+    });
 
-        document.getElementById('buyerModelIdLabel').innerHTML = "Buyer Model Id: " + String(info);
+    contract.methods.metrics(3).call().then(function(info) {
+        
+        if(info != -1 && info != 1)
+        {
+            document.getElementById('buyerModelCORRLabel').innerHTML = "Buyer Model Live CORR: " + String(info / Math.pow(10, 18));
+        }
+        else
+        {
+            document.getElementById('buyerModelCORRLabel').innerHTML = "Buyer Model Live CORR: Not Determined";
+        }
+    });
+
+    contract.methods.metrics(4).call().then(function(info) {
+        
+        if(info != -1 && info != 1)
+        {
+            document.getElementById('buyerModelMMCLabel').innerHTML = "Buyer Model Live MMC: " + String(info / Math.pow(10, 18));
+        }
+        else
+        {
+            document.getElementById('buyerModelMMCLabel').innerHTML = "Buyer Model Live MMC: Not Determined";
+        }
+    });
+
+    contract.methods.metrics(5).call().then(function(info) {
+        
+        if(info != -1 && info != 1)
+        {
+            document.getElementById('buyerModelFNCLabel').innerHTML = "Buyer Model Live FNC: " + String(info / Math.pow(10, 18));
+        }
+        else
+        {
+            document.getElementById('buyerModelFNCLabel').innerHTML = "Buyer Model Live FNC: Not Determined";
+        }
+    });
+
+    contract.methods.metrics(0).call().then(function(info) {
+        
+        if(info != -1 && info != 1)
+        {
+            document.getElementById('sellerModelCORRLabel').innerHTML = "Seller Model Live CORR: " + String(info / Math.pow(10, 18));
+        }
+        else
+        {
+            document.getElementById('sellerModelCORRLabel').innerHTML = "Seller Model Live CORR: Not Determined";
+        }
+    });
+
+    contract.methods.metrics(1).call().then(function(info) {
+        
+        if(info != -1 && info != 1)
+        {
+            document.getElementById('sellerModelMMCLabel').innerHTML = "Seller Model Live MMC: " + String(info / Math.pow(10, 18));
+        }
+        else
+        {
+            document.getElementById('sellerModelMMCLabel').innerHTML = "Seller Model Live MMC: Not Determined";
+        }
+    });
+
+    contract.methods.metrics(2).call().then(function(info) {
+        
+        if(info != -1 && info != 1)
+        {
+            document.getElementById('sellerModelFNCLabel').innerHTML = "Seller Model Live FNC: " + String(info / Math.pow(10, 18));
+        }
+        else
+        {
+            document.getElementById('sellerModelFNCLabel').innerHTML = "Seller Model Live FNC: Not Determined";
+        }
     });
 
 
-    console.log(contract)
-    console.log(new Array(contract.methods));
+
 }
 
 function sendWrapper(method, options) {
@@ -252,7 +356,7 @@ function registerBuyerName() {
     }
 
     actionDesc = "Register Buyer Name.";
-    toTransact = contract.methods.registerBuyerModelName($("#buyerModelNameInput").val());
+    toTransact = contract.methods.registerBuyerModelName($("#buyerModelNameInput").val().trim());
     gasEstimateCheckModalWrapper(toTransact, function() {
         contract.methods.costETH().call().then(function(info) {
             sendWrapper(toTransact, {
@@ -349,9 +453,9 @@ function deploy() {
         from: account,
         data: bcr
     });
-    dSMN = $("#dataScientistModelNameInput").val();
-    sP = (BigInt($("#dataScientistStakePromiseInput").val()) * (BigInt("1000000000000000000")));
-    cE = (BigInt($("#costETHInput").val()) * BigInt("1000000000000000000"));
+    dSMN = $("#dataScientistModelNameInput").val().trim();
+    sP = (BigInt($("#dataScientistStakePromiseInput").val().trim()) * (BigInt("1000000000000000000")));
+    cE = (BigInt($("#costETHInput").val().trim()) * BigInt("1000000000000000000"));
     toDeploy.deploy({
         data: bcr,
         arguments: [dSMN, cE, sP]
