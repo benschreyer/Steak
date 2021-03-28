@@ -542,8 +542,13 @@ window.addEventListener('load', () => {
     setup();
     //$("#metaMaskRequiredModal").on("hidden.bs.modal",setup);
 
-
-
+    console.log("ABC",window.location.href.slice(window.location.href.indexOf("?")+1).length);
+    if(window.location.href.slice(window.location.href.indexOf("?")+1).length > 0 && window.location.href.toString().includes("?"))
+    {
+        console.log("ABC",window.location.href.slice(window.location.href.indexOf("?")+1));
+        document.getElementById("newInfo").value = (window.location.href.slice(window.location.href.indexOf("?")+1));
+        retreiveContract();
+    }
 
     var calendarInterval = setInterval(
     function()
