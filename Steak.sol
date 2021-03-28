@@ -168,7 +168,7 @@ contract Steak is ChainlinkClient {
         feeUint = 0.1 * 10 ** 18;
         
         //Total fee needed for full contract execution
-        totalFee = feeBuyerModelId + 6 * feeFloat + 4 * feeUint;
+        totalFee = feeBuyerModelId + 8 * feeFloat + 4 * feeUint;
 
         
         //Holds what should be latest submission round for both parties
