@@ -100,7 +100,7 @@ contract Steak is ChainlinkClient {
     //State variables
     //locked: buyer cannot be kicked from the contract, contract cannot receive payment, model names cannot be changed. Contract must be locked but unverified for a refund request to go through
     bool public locked;
-    //verified: allows contract owner to collect payment, should only be true after suubmissions are found to have matching performance on live and stake promise met by data scientist
+    //verified: allows contract owner to collect payment, should only be true after submissions are found to have matching performance on live and stake promise met by data scientist
     bool public verified;
     
 
