@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: 0BSD
+// SPDX-License-Identifier: MIT
 /*
 MIT License
 Copyright (c) 2021 Benjamin Schreyer
