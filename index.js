@@ -7,7 +7,7 @@ var actionDesc;
 //true for modal main
 var modalDecision = true;
 
-
+var startDate;
 
 
 
@@ -180,17 +180,19 @@ function retreiveContract() {
         
         var dateT = new Date(0);
         dateT.setUTCSeconds(info);
-        document.getElementById('birthStampLabel').innerHTML = "Birth Date: " + String(dateT);
+        document.getElementById('birthStampLabel').innerHTML = "Birth Date: " + String(dateT.toUTCString().replace("GMT","UTC"));
     });
 
     contract.methods.startTimestamp().call().then(function(info) {
         
+        
         var dateT = new Date(0);
         dateT.setUTCSeconds(info);
         console.log(info == 0);
+        startDate = dateT;
         if(info != 0 )
         {
-         document.getElementById('startStampLabel').innerHTML = "Start Date: " + String(dateT);
+         document.getElementById('startStampLabel').innerHTML = "Start Date: " + String(dateT.toUTCString().replace("GMT","UTC"));
         }
         else
         {
@@ -488,10 +490,145 @@ function deploy() {
         }
     );
 }
+
+function highlightCalendarColumn(selectedCol)
+{
+    
+    var allTd = document.getElementsByTagName("td");
+
+    for(var i = 0;i < allTd.length;i++)
+    {
+
+                allTd[i].style = ""; 
+
+    }
+    allTd = document.getElementsByTagName("th");
+    for(var i = 0;i < allTd.length;i++)
+    {
+
+                allTd[i].style = ""; 
+
+    }
+
+    allTd = document.getElementsByTagName("td");
+
+    for(var i = 0;i < allTd.length;i++)
+    {
+        if(allTd[i].getAttribute("calendarColumn") !== null && allTd[i].getAttribute("calendarColumn").includes(selectedCol))
+        {
+            allTd[i].style = "border-style:solid;border-width:2px";
+            if(allTd[i].getAttribute("calendarColumn").includes("nb"))
+            {
+                allTd[i].style = "border-style:solid;border-width:2px;border-bottom:none"; 
+            }
+        }
+    }
+    allTd = document.getElementsByTagName("th");
+    for(var i = 0;i < allTd.length;i++)
+    {
+        if(allTd[i].getAttribute("calendarColumn") !== null && allTd[i].getAttribute("calendarColumn").includes(selectedCol))
+        {
+            allTd[i].style = "border-style:solid;border-width:2px";
+            if(allTd[i].getAttribute("calendarColumn").includes("nb"))
+            {
+                allTd[i].style = "border-style:solid;border-width:2px;border-bottom:none"; 
+            }
+        }
+    }
+}
+
 window.addEventListener('load', () => {
 
     setup();
     //$("#metaMaskRequiredModal").on("hidden.bs.modal",setup);
+
+
+
+
+    var calendarInterval = setInterval(
+    function()
+    {
+        var d = new Date();
+
+
+
+        var n = d.toUTCString();
+        console.log(n);
+        document.getElementById("UTCclock").innerHTML = n.replace("GMT","UTC");
+        if(startDate !== undefined && startDate.getTime() !== 0)
+        {
+            console.log("have startdate",startDate);
+            console.log(startDate.getTime(),d.getTime());
+            
+            var elapsed = (d.getTime() - startDate.getTime())/3600000;
+
+            highlightCalendarColumn("" + (d.getDay() + 1))
+            console.log(d.getUTCHours());
+            if(elapsed > 198)
+            {
+                highlightCalendarColumn("9");
+            }
+            else
+            {
+                switch(d.getDay())
+            {
+                case 0:
+                    if(elapsed > 48)
+                    {
+                        highlightCalendarColumn("8");
+                    }
+                    else
+                    {
+                        highlightCalendarColumn("1");
+                    }
+                    break;
+
+                case 1:
+                    if(d.getUTCHours() <=13)
+                    {
+                        highlightCalendarColumn("2");
+                    }
+                    break;
+
+                case 2:
+                    highlightCalendarColumn("3");
+                    break;
+
+                case 3:
+                    highlightCalendarColumn("4");
+                    break;
+                
+                case 4:
+                    highlightCalendarColumn("5");
+                    break;
+
+                case 5:
+                    highlightCalendarColumn("6");
+                    break;
+                
+                case 6:
+                    if(elapsed > 48)
+                    {
+                        highlightCalendarColumn("7");
+                    }
+                    else
+                    {
+                        if(d.getUTCHours >= 18)
+                        {
+                            highlightCalendarColumn("0");
+                        }
+                    }
+                    break;
+                
+
+
+            }
+            }
+            
+
+
+        }
+    },500);
 
 
 });
