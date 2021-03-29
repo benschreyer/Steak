@@ -594,32 +594,28 @@ window.addEventListener('load', () => {
                     {
                         highlightCalendarColumn("2");
                     }
-                    else
-                    {
-                        console.log("SHRIMP");
-                    }
                     break;
 
                 case 2:
-                    highlightCalendarColumn("4");
+                    highlightCalendarColumn("3");
                     break;
 
                 case 3:
-                    highlightCalendarColumn("5");
+                    highlightCalendarColumn("4");
                     break;
                 
                 case 4:
-                    highlightCalendarColumn("6");
+                    highlightCalendarColumn("5");
                     break;
 
                 case 5:
-                    highlightCalendarColumn("7");
+                    highlightCalendarColumn("6");
                     break;
                 
                 case 6:
                     if(elapsed > 48)
                     {
-                        highlightCalendarColumn("8");
+                        highlightCalendarColumn("7");
                     }
                     else
                     {
