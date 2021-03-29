@@ -567,15 +567,15 @@ window.addEventListener('load', () => {
             
             var elapsed = (d.getTime() - startDate.getTime())/3600000;
 
-            highlightCalendarColumn("" + (d.getDay() + 1))
-            console.log(d.getUTCHours());
+            //highlightCalendarColumn("" + (d.getDay() + 1))
+            console.log("UTC DEB HOURS",typeof d.getUTCHours());
             if(elapsed > 198)
             {
                 highlightCalendarColumn("9");
             }
             else
             {
-                switch(d.getDay())
+                switch(d.getUTCDay())
             {
                 case 0:
                     if(elapsed > 48)
@@ -589,32 +589,37 @@ window.addEventListener('load', () => {
                     break;
 
                 case 1:
-                    if(d.getUTCHours() <=13)
+                    console.log("UTC HOURS",d.getUTCHours());
+                     if(d.getUTCHours() <=13)
                     {
                         highlightCalendarColumn("2");
+                    }
+                    else
+                    {
+                        console.log("SHRIMP");
                     }
                     break;
 
                 case 2:
-                    highlightCalendarColumn("3");
+                    highlightCalendarColumn("4");
                     break;
 
                 case 3:
-                    highlightCalendarColumn("4");
+                    highlightCalendarColumn("5");
                     break;
                 
                 case 4:
-                    highlightCalendarColumn("5");
+                    highlightCalendarColumn("6");
                     break;
 
                 case 5:
-                    highlightCalendarColumn("6");
+                    highlightCalendarColumn("7");
                     break;
                 
                 case 6:
                     if(elapsed > 48)
                     {
-                        highlightCalendarColumn("7");
+                        highlightCalendarColumn("8");
                     }
                     else
                     {
