@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //bensch
 //Kovan Test Network contract to facilitate purchase of Numerai model submission for a buyer Numerai account 
 
-// COMPILE WITH ENABLE OPTIMIZATION AT 200 RUNS SO IT IS SMALL ENOUGH FOR ETH
+// COMPILE WITH ENABLE OPTIMIZATION AT 800 RUNS SO IT IS SMALL ENOUGH FOR ETH
 
 pragma solidity ^0.6.0;
 
