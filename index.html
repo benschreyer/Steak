@@ -4,22 +4,23 @@
 <head>
 	<title>Steak For Numer.ai on Kovan Test Network</title>
 	<link href='bootstrap.css' rel='stylesheet' type='text/css'>
+
 	<script src="jquery-3.1.1.slim.min.js"></script>
 	<script src="web3.1.3.4.min.js"></script>
 	<script src="bootstrap.3.4.1.min.js"></script>
-	<script src="./index.js"></script>
 	<script src = "bignumber.js"></script>
+	<script src="./index.js"></script>
+
+	
   <link rel="icon" href="favicon.ico"  type="image/icon type">
 </head>
 
 <body class="container-fluid" style = "margin-top: -4vh;">
 	
-
-
 		<div class="row">
 			<div class="col-sm-4">
-				<h3 class="page-header">
-        </svg>View Contract</h3>
+				<h3 class="page-header" >
+        View Contract</h3>
 				<form class="form-inline" role="form">
 					<div class="form-group">
 						<table>
@@ -31,14 +32,17 @@
 									<input class="form-control" id="newInfo"> </td>
 							</tr>
 						</table>
-					</div> <a href="#" onclick="retreiveContract()" class="btn btn-primary">Retreive</a> </form>
+					</div> <a  onclick="retreiveContract()" class="btn btn-primary">Retreive</a></form>
 				<br/>
 				<div style="height:85vh;
         overflow-y: scroll;">
 				<ul class="list-group">
-					<li class="list-group-item" id="addressLabel">Contract Address:</li>
+					<li class="list-group-item" id="addressLabel">Contract Address:  <a data-container="body" data-toggle="tooltip" data-placement="top" title="Copy Shareable Steak View Link" style = "float:right"  onclick ="shareableLink()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16">
+						<path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>
+						<path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"/>
+					  </svg></a></li>
 					<li class="list-group-item" id="dataScientistModelNameLabel">Data Scientist Model Name:
-						<a href="#"></a>
+						<a ></a>
 					</li>
 					<li class="list-group-item" id="costETHLabel">Contract Cost:</li>
 					<li class="list-group-item" id="dataScientistStakePromiseLabel">Promised Data Scientist Stake:</li>
@@ -48,7 +52,7 @@
 					<li class="list-group-item" id="birthStampLabel">Birth Date:</li>
 					<li class="list-group-item" id="startStampLabel">Start Date:</li>
 					<li class="list-group-item" id="buyerModelNameLabel">Buyer Model Name:
-						<a href="#"></a>
+						<a ></a>
 					</li>
 					<li class="list-group-item" id="buyerModelIdLabel">Buyer Model Id:</li>
 					<li class="list-group-item" id="buyerModelCORRLabel">Buyer Model Live CORR:</li>
@@ -74,29 +78,29 @@
 					<div id="buyer" class="tab-pane fade in active">
 						<form class="form-inline" role="form">
 							<ul class="list-group">
-								<li class="list-group-item"><a href="#" onclick="registerBuyerName()" class="btn btn-primary">Register Your Model</a>
+								<li class="list-group-item"><a  onclick="registerBuyerName()" class="btn btn-primary">Register Your Model</a>
 									<br/>
 									<br/>
 									<label>Model Name: </label>
 									<input class="form-control" id="buyerModelNameInput">
 								</li>
-								<li class="list-group-item"><a href="#" onclick="reclaim()" class="btn btn-primary">Reclaim</a></li>
+								<li class="list-group-item"><a  onclick="reclaim()" class="btn btn-primary">Reclaim</a></li>
 							</ul>
 						</form>
 					</div>
 					<div id="owner" class="tab-pane fade">
 						<form class="form-inline" role="form">
 							<ul class="list-group">
-								<li class="list-group-item"><a href="#" onclick="kick()" class="btn btn-primary">Kick</a></li>
-								<li class="list-group-item"><a href="#" onclick="lock()" class="btn btn-primary">Lock</a></li>
-								<li class="list-group-item"><a href="#" onclick="claim()" class="btn btn-primary">Claim</a></li>
+								<li class="list-group-item"><a  onclick="kick()" class="btn btn-primary">Kick</a></li>
+								<li class="list-group-item"><a  onclick="lock()" class="btn btn-primary">Lock</a></li>
+								<li class="list-group-item"><a  onclick="claim()" class="btn btn-primary">Claim</a></li>
 							</ul>
 						</form>
 					</div>
 					<div id="deploy" class="tab-pane fade">
 						<form class="form-inline" role="form">
 							<ul class="list-group">
-								<li class="list-group-item"><a href="#" onclick="deploy()" class="btn btn-primary">Deploy</a>
+								<li class="list-group-item"><a  onclick="deploy()" class="btn btn-primary">Deploy</a>
 									<br/>
 									<br/>
 									<label>Model Name: </label>
