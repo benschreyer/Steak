@@ -115,6 +115,7 @@ function setUpCheck(viewB) {
 }
 
 function retreiveContract() {
+
     console.log("true retA");
     if (!setUpCheck(true)) {
         return;
@@ -123,7 +124,7 @@ function retreiveContract() {
     contractAddress = $("#newInfo").val().trim();
     contract = new web3.eth.Contract(abi, $("#newInfo").val().trim());
     console.log(contract);
-    document.getElementById("addressLabel").innerHTML = "Contract Address: " + '<a target="_blank" href = "https://kovan.etherscan.io/address/' + $("#newInfo").val() + '">' + $("#newInfo").val().trim() + "</a>";
+    document.getElementById("addressLabel").innerHTML = "Contract Address: " + '<a target="_blank" href = "https://kovan.etherscan.io/address/' + $("#newInfo").val() + '">' + $("#newInfo").val().trim() + "</a>" + '<a data-container="body" data-toggle="tooltip" data-placement="top" title="Copy Shareable Steak View Link" style = "float:right;verical-algin:center" href = "" onclick ="shareableLink()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16"><path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/><path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"/></svg></a>';
 
     contract.methods.dataScientistModelName().call().then(function(info) {
         
@@ -309,7 +310,6 @@ function retreiveContract() {
             document.getElementById('sellerModelPendingPayoutLabel').innerHTML = "Seller Model Live Pending Payout: " + (new BigNumber(info)).shiftedBy(-18).toString();
 
     });
-
 
 
 }
@@ -537,8 +537,17 @@ function highlightCalendarColumn(selectedCol)
     }
 }
 
-window.addEventListener('load', () => {
+function shareableLink()
+{
+    
+    navigator.clipboard.writeText(window.location.href.slice(0,window.location.href.lastIndexOf("/") + 1) + "?" + contractAddress);
+}
 
+
+window.addEventListener('load', () => {
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      });
     setup();
     //$("#metaMaskRequiredModal").on("hidden.bs.modal",setup);
 
