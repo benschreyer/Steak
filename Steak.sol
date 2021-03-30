@@ -310,7 +310,8 @@ contract Steak is ChainlinkClient {
     function reclaim() public returns (bool success)
     {
         uint tempStamp = now;
-        require(tempStamp - startTimestamp > 712800, "Must wait 198 hours (8.25 days) from buyer model name registration to reclaim failed contract.");
+        //require(tempStamp - startTimestamp > 712800, "Must wait 198 hours (8.25 days) from buyer model name registration to reclaim failed contract.");
+        require(((tempStamp - startTimestamp > 345600) && ((getWeekday(tempStamp) == 1) || (getWeekday(tempStamp) == 2))) || tempStamp - startTimestamp > 712800 ,"Cannot claim contract before monday of the week following the round.")
         require(msg.sender == buyer, "Only the buyer can trigger a payment reclaim.");
         require(!verified, "Cannot reclaim verified contract.");
         
