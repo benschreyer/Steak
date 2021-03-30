@@ -297,7 +297,7 @@ contract Steak is ChainlinkClient {
     
     function fulfillBuyerModelId(bytes32 _requestId, bytes32 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        validateChainlinkCallback(_requestId);
+
         buyerModelId = bytes32ToString(_APIresult);
         emit Locked(buyerModelName, buyerModelId);
     }
@@ -382,7 +382,7 @@ contract Steak is ChainlinkClient {
     
     function fulfillDataScientistStake(bytes32 _requestId, uint256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        validateChainlinkCallback(_requestId);
+
         dataScientistStakeActual = _APIresult;
         latestSubmissionCounter = 0;
         getLatestSubmissionRound(modelNames[latestSubmissionCounter]);
@@ -407,7 +407,7 @@ contract Steak is ChainlinkClient {
     
     function fulfillLatestSubmissionRound(bytes32 _requestId, uint256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        validateChainlinkCallback(_requestId);
+
         latestSubmissionRounds[latestSubmissionCounter] = _APIresult;
         latestSubmissionCounter++;
         if(latestSubmissionCounter == 1)
@@ -438,7 +438,7 @@ contract Steak is ChainlinkClient {
     
     function fulfillRoundNumber(bytes32 _requestId, uint256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        validateChainlinkCallback(_requestId);
+
         roundNumber = _APIresult;
         require(roundNumber == latestSubmissionRounds[0] && latestSubmissionRounds[0] == latestSubmissionRounds[1],"All submissions on models must be current round and equal.");
         
@@ -469,7 +469,7 @@ contract Steak is ChainlinkClient {
     }
     function fulfillGetPayoutPending(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        validateChainlinkCallback(_requestId);
+
         payoutPending[payoutPendingCounter] = _APIresult;
         if(payoutPendingCounter >= 1)
         {
@@ -516,7 +516,7 @@ contract Steak is ChainlinkClient {
     //End of API call and callback chain
     function fulfillFloat(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        validateChainlinkCallback(_requestId);
+
         metrics[metricsCounter] = _APIresult;
         metricsCounter++;
         if(metricsCounter == 6)
