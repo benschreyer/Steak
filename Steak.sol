@@ -7,9 +7,12 @@ The above copyright notice and this permission notice (including the next paragr
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-//Last updated 3/28/2021
+//Last updated 4/1/2021
 //bensch
 //Kovan Test Network contract to facilitate purchase of Numerai model submission for a buyer Numerai account 
+
+//Note 4/1/2021 currently late sub.s is checked by a failure of a node to callback because Numerai returned null to an API call for pending payout,
+//this works now, but if nodes ever switch to taking null to be 0 this will not work and late submissions will be accepted which is an error.
 
 // COMPILE WITH ENABLE OPTIMIZATION AT 800 RUNS SO IT IS SMALL ENOUGH FOR ETH
 
@@ -73,7 +76,7 @@ contract Steak is ChainlinkClient {
 
     //Ensure both submissions are on time by requiring they have pending payout
     
-    int256[2] public payoutPending;
+    //int256[2] public payoutPending;
     uint256 payoutPendingCounter;
 
     
@@ -132,7 +135,9 @@ contract Steak is ChainlinkClient {
         //payout pending must have non 0 value to ensure verification
         require(_dataScientistStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
         //Set to zero since it is atleast extremely rare to get exactly 0 payout so there should almost never be a time where the submission was on time but a refund is granted
-        payoutPending = [0, 0];
+        //Edit 4/1/21 Kovan nodes from alphavantage error and do not callback if they get null for int256, conveniently null is returned for pending stake if the sub was late, so instead of checking for non 0 payout to check for late sub,
+        //just stop the confirmation call chain early and never reach full confirmation if the node throws an error because it is trying to multiply null and doesnt callback
+        //payoutPending = [0, 0];
         payoutPendingCounter = 0;
 
         //Not a possible stake value on Numer.ai, used to give the variable a value for being unitialized
@@ -471,7 +476,7 @@ contract Steak is ChainlinkClient {
     function fulfillGetPayoutPending(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
 
-        payoutPending[payoutPendingCounter] = _APIresult;
+        //payoutPending[payoutPendingCounter] = _APIresult;
         if(payoutPendingCounter >= 1)
         {
             payoutPendingCounter = 0;
@@ -526,7 +531,7 @@ contract Steak is ChainlinkClient {
             latestSubmissionCounter = 0;
             //mmc corr fnc
 
-            if(metrics[0] == metrics[3] && metrics[1] == metrics[4] &&  metrics[2] == metrics[5] && roundNumber == latestSubmissionRounds[0] && latestSubmissionRounds[0] == latestSubmissionRounds[1] && dataScientistStakeActual >= dataScientistStakePromise && payoutPending[0] != 0 && payoutPending[1] != 0)
+            if(metrics[0] == metrics[3] && metrics[1] == metrics[4] &&  metrics[2] == metrics[5] && roundNumber == latestSubmissionRounds[0] && latestSubmissionRounds[0] == latestSubmissionRounds[1] && dataScientistStakeActual >= dataScientistStakePromise) //&& payoutPending[0] != 0 && payoutPending[1] != 0)
             {
                 verified = true;
                 //require(latestSubmissionRounds[0] == latestSubmissionRounds[1] && roundNumber == latestSubmissionRounds[0]);
