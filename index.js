@@ -263,12 +263,12 @@ function retreiveContract() {
         }
     });
 
-    contract.methods.payoutPending(0).call().then(function(info) {
+    /*contract.methods.payoutPending(0).call().then(function(info) {
         
 
         document.getElementById('buyerModelPendingPayoutLabel').innerHTML = "Buyer Model Live Pending Payout: " + (new BigNumber(info)).shiftedBy(-18).toString();
 
-    });
+    });*/
 
     contract.methods.metrics(0).call().then(function(info) {
         
@@ -306,12 +306,12 @@ function retreiveContract() {
         }
     });
 
-    contract.methods.payoutPending(1).call().then(function(info) {
+    /*contract.methods.payoutPending(1).call().then(function(info) {
         
 
             document.getElementById('sellerModelPendingPayoutLabel').innerHTML = "Seller Model Live Pending Payout: " + (new BigNumber(info)).shiftedBy(-18).toString();
 
-    });
+    });*/
 
 
 }
@@ -624,14 +624,17 @@ window.addEventListener('load', () => {
                     break;
                 
                 case 6:
+
                     if(elapsed > 48)
                     {
                         highlightCalendarColumn("7");
                     }
                     else
                     {
-                        if(d.getUTCHours >= 18)
+
+                        if(d.getUTCHours() >= 18)
                         {
+
                             highlightCalendarColumn("0");
                         }
                     }
