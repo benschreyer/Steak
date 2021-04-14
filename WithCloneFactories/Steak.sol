@@ -71,9 +71,9 @@ contract Steak is ChainlinkClient {
     uint256 public roundNumber;
     
     //Store fire live performance stat of each model (Listed below CORR, MMC, FNC)
-    int256 public buyerLiveCorrelation = -1;
-    int256 public dataScientistLiveCorrelation = 1;
-    bool private getBuyerCorrelation = false;
+    int256 public buyerLiveCorrelation;
+    int256 public dataScientistLiveCorrelation;
+    bool private getBuyerCorrelation;
 
     //Ensure both submissions are on time by requiring they have pending payout
     
@@ -81,8 +81,7 @@ contract Steak is ChainlinkClient {
     uint256 payoutPendingCounter;
 
     
-    //Hold name of metrics to enable clean retreival of live performance for verification of contract success
-    string[3] public metricNames;
+
     
     //Seconds since Unix epoch
     uint256 public startTimestamp;
@@ -119,6 +118,7 @@ contract Steak is ChainlinkClient {
     //UNIX stamp for contract construction
     uint public birthStamp;
     
+    address public libraryAddress;
     /**
      * Network: Kovan
      * Oracle: Chainlink - https://market.link/nodes/ef076e87-49f4-486b-9878-c4806781c7a0/adapters?network=42
@@ -131,8 +131,9 @@ contract Steak is ChainlinkClient {
     constructor(string memory _dataScientistModelName, uint256 _costETH,uint256 _dataScientistStakePromise) public 
     {
 
-        birthStamp = now;
 
+        birthStamp = now;
+        bensch = 0xa9187C8C9f692Fe2ca6b80069e87dF23b34157A3;
         //payout pending must have non 0 value to ensure verification
         require(_dataScientistStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
         //Set to zero since it is atleast extremely rare to get exactly 0 payout so there should almost never be a time where the submission was on time but a refund is granted
@@ -140,6 +141,10 @@ contract Steak is ChainlinkClient {
         //just stop the confirmation call chain early and never reach full confirmation if the node throws an error because it is trying to multiply null and doesnt callback
         //payoutPending = [0, 0];
         payoutPendingCounter = 0;
+        
+        buyerLiveCorrelation = -1;
+        dataScientistLiveCorrelation = 1;
+        getBuyerCorrelation = false;
 
         //Not a possible stake value on Numer.ai, used to give the variable a value for being unitialized
         dataScientistStakeActual = 1;
