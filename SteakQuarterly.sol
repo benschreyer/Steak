@@ -262,6 +262,7 @@ contract SteakQuarterly is ChainlinkClient {
     {
         uint tempStamp = now;
         
+        require(((tempStamp - startTimestamp) / 604800) < 12, "Cannot contest contract after 12 weeks have elapsed.");
         require(msg.sender == buyer, "Only the buyer can trigger an audit.");
         require(locked, "Cannot contest an unlocked contract.");
         
@@ -284,7 +285,7 @@ contract SteakQuarterly is ChainlinkClient {
         
         require(msg.sender == owner, "Only the owner can trigger a payment claim.");
         require(locked, "Cannot claim an unlocked contract.");
-        require(((tempStamp - startTimestamp) / 604800) > 12, "Cannot claim contract before 12 weeks have elapsed.");
+        require(((tempStamp - startTimestamp) / 604800) >= 12, "Cannot claim contract before 12 weeks have elapsed.");
         //require((getWeekday(tempStamp) == 5) || getWeekday(tempStamp) == 6 || getWeekday(tempStamp) == 0, "Contract reward can only be validated and claimed on Friday, Saturday, or Sunday UTC.");
         //require((tempStamp - startTimestamp > 345600) && (tempStamp - startTimestamp < 712800),"Must claim contract before Monday UTC of the week following the contract being engaged by the buyer and after Thursday UTC of the week the contract was engaged by the buyer. Cannot claim otherwise.");
         
