@@ -318,7 +318,7 @@ contract SteakQuarterly is ChainlinkClient {
         require(msg.sender == oracleInt, "only oracle can fullfil");
 
         dataAPI[_requestId] = _APIresult;
-        
+        //LATEST ROUND CALLS DONT WORK DO NOT USE THIS
         if(callbackCount == 0)
         {
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
