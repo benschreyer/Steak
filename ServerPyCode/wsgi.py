@@ -52,18 +52,32 @@ def get_client_address(environ):
         return environ['REMOTE_ADDR']
 
 def application(environ, start_response):
+    #url args /seller,buyer,starttimeepoch,stakepromise,email
     url_args = environ.get("PATH_INFO").split("/")[-1].split(",")
-    email = url_args[-1]
+
+    if(len(url_args) !=5):
+        status = '200 OK'
+        content = """bad<script>
+window.close();
+</script>"""
+        response_headers = [('Content-Type', 'text/html'), ('Content-Length', str(len(content)))]
+        start_response(status, response_headers)
+        yield content.encode('utf8')
+        return
+
+    email = url_args[4]
     print(url_args)
     print("IMPORTANT",environ.get("PATH_INFO"))
     #print("EMAIL:  ", email)
     #print("VAL EMAIL",check(email))
     if(check(email)):
         email_file = open("emails.txt","a")
-        email_file.write(url_args[0]+","+url_args[1]+","+email + "\n")
+        email_file.write(url_args[0]+","+url_args[1]+","+url_args[2]+","+url_args[3]+","+email + "\n")
         email_file.close()
     status = '200 OK'
-    content = 'good'
+    content = """good<script>
+window.close();
+</script>"""
     response_headers = [('Content-Type', 'text/html'), ('Content-Length', str(len(content)))]
     start_response(status, response_headers)
     yield content.encode('utf8')
