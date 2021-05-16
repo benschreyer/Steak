@@ -43,7 +43,6 @@ contract SteakQuarterly is ChainlinkClient {
     
     event Claimed();
     
-
     
     //bensch Kovan Test Network wallet for 1% fee
     address payable public bensch = 0xa9187C8C9f692Fe2ca6b80069e87dF23b34157A3;
@@ -55,6 +54,7 @@ contract SteakQuarterly is ChainlinkClient {
     uint256 public callbackCount = 0;
 
     bytes32 public buyerCorrelationRequestId;
+
     bytes32 public sellerCorrelationRequestId;
     
     bytes32 public sellerStakeRequestId;
@@ -62,10 +62,12 @@ contract SteakQuarterly is ChainlinkClient {
     bytes32 public sellerControlRequestId;
 
     bytes32 public buyerControlRequestId;
+
     
     //Seconds since Unix epoch
     uint256 public startTimestamp;
   
+
     //Who deployed the contract and who engaged the contract
     address payable public owner;
     address payable public buyer;
@@ -81,31 +83,29 @@ contract SteakQuarterly is ChainlinkClient {
     bytes32 public jobIdInt = "2649fc4ca83c4016bfd2d15765592bee";
     uint256 public feeInt = 0.1 * 10 ** 18;
     
-
-    
     //Total fee needed for full contract execution
-    uint256 public totalFee = 8 * feeInt;
+    uint256 public totalFee = 3 * feeInt + 2 * feeBytes32;
     
+
     //State variables
     //locked: buyer cannot be kicked from the contract, contract cannot receive payment, model names cannot be changed. Contract must be locked but unverified for a refund request to go through
     bool public locked;
-    //verified: allows contract owner to collect payment, should only be true after submissions are found to have matching performance on live and stake promise met by data scientist
-    bool public verified;
     
 
     //UNIX stamp for contract construction
     uint public birthStamp;
     
+
     //Cost to buy sumbissions
     uint256 public costETH;
     
+    //Promised model stake by seller, should be a conservative underestimate ie 50% or less of actual stake
     uint256 public sellerStakePromise;
     
     
     /**
      * Network: Kovan
-     * Oracle: Chainlink - https://market.link/nodes/ef076e87-49f4-486b-9878-c4806781c7a0/adapters?network=42
-     * Job ID: Chainlink - https://market.link/jobs/c2387021-cf1c-44a0-ae79-66fcdf39cff3?network=42
+     * market.link
      * Fee: 0.1 LINK
      */
      
@@ -114,28 +114,29 @@ contract SteakQuarterly is ChainlinkClient {
     constructor(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public 
     {
 
-
         birthStamp = now;
+
         //payout pending must have non 0 value to ensure verification
         require(_sellerStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
 
-
-
         //state variables
         locked = false;
-        verified = false;
         
+
         //Store cost and promises by data scientist
         costETH = _costETH;
         sellerModelName = _sellerModelName;
         sellerStakePromise = _sellerStakePromise;
         
+
         //Give ownership to contract creator
         owner = msg.sender;
         
+
         //Chainlink setup
         setPublicChainlinkToken();
         
+
         emit Constructed(sellerModelName, costETH, sellerStakePromise);
 
     }
@@ -151,29 +152,24 @@ contract SteakQuarterly is ChainlinkClient {
         require(msg.sender != owner, "Data scientist can not enter their own contract.");
         require(buyer == address(0), "Contract already has buyer.");
         require(msg.value >= costETH,"Insufficient ETH sent to enter contract.");
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) > 17) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 0),"Contract can only be entered by buyer between Saturday 18:00 UTC and Sunday 24:00 UTC");
-        
         require(!locked, "Cannot register buyerModelName on locked contract.");
-
         require(bytes(_buyerModelName).length != 0,"Model name must not be empy/NULL string.");
-        
         require(bytes(buyerModelName).length == 0, "Model must not already have buyerModelName.");
 
+        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) > 17) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 0),"Contract can only be entered by buyer between Saturday 18:00 UTC and Sunday 24:00 UTC");      
+
+
         buyer = msg.sender;
-        
-        verified = false;
-        
-        
         buyerModelName = _buyerModelName;
         startTimestamp = tempStamp;
         
-        //1% fee
 
+        //1% fee
         bensch.transfer(address(this).balance / 100);
         
+
         emit BuyerModelNameRegistered(buyerModelName, msg.value);
     }
-   
     
     
     
@@ -188,19 +184,22 @@ contract SteakQuarterly is ChainlinkClient {
         require(!locked, "Cannot kick locked contract.");
         require(buyer != address(0), "No buyer to kick.");
         
-        
         require((tempStamp - startTimestamp) < 158400,"Cannot kick buyer from contract that was entered by buyer over 44 hours ago.");
         require((SteakQuarterlyUtil.getWeekday(tempStamp) == 0) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14),"Contract buyer can only be kicked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
+
         buyer.transfer(address(this).balance);
         require(address(this).balance == 0, "Failed to return ETH to buyer. Cannot kick.");
         
+
         emit Kicked(buyerModelName);
         
+
         buyer = address(0);
         buyerModelName = "";
         startTimestamp = 0;
         
+
         return true;
     }
     
@@ -217,6 +216,7 @@ contract SteakQuarterly is ChainlinkClient {
         require(!locked, "Cannot lock contract that is already locked.");
         require(buyer != address(0),"No buyer to lock.");
         require(bytes(buyerModelName).length != 0,"No buyerModelName to lock.");
+
         require((tempStamp - startTimestamp) < 158400,"Cannot lock contract that was entered by buyer over 44 hours ago.");
         require((SteakQuarterlyUtil.getWeekday(tempStamp) == 0) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
@@ -224,12 +224,9 @@ contract SteakQuarterly is ChainlinkClient {
         require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.1 LINK total to operate once locked, current LINK balance is under 0.1.");
 
         
-
-        
         locked = true;
     
-        
-        
+
         return true;
     }
     
@@ -242,12 +239,15 @@ contract SteakQuarterly is ChainlinkClient {
         
         buyer.transfer(address(this).balance);
         require(address(this).balance == 0, "Failed to return ETH to buyer. Cannot kick.");
+
         
         emit Kicked(buyerModelName);
+
         
         buyer = address(0);
         buyerModelName = "";
         startTimestamp = 0;
+
         
         return true;
 
@@ -256,17 +256,25 @@ contract SteakQuarterly is ChainlinkClient {
     function buildAndSendIntRequest(string memory get, string memory path, int256 times) public returns (bytes32 requestId)
     {
         Chainlink.Request memory ret = buildChainlinkRequest(jobIdInt, address(this), this.fulfillInt.selector);
+
+
         ret.addInt("times",times);
         ret.add("get",get);
         ret.add("path",path);
+
+
         return sendChainlinkRequestTo(oracleInt, ret, feeInt);
     }
 
     function buildAndSendBytes32Request(string memory get, string memory path) public returns (bytes32 requestId)
     {
-        Chainlink.Request memory ret = buildChainlinkRequest(jobIdInt, address(this), this.fulfillBytes32.selector);
+        Chainlink.Request memory ret = buildChainlinkRequest(jobIdBytes32, address(this), this.fulfillBytes32.selector);
+
+
         ret.add("get",get);
         ret.add("path",path);
+
+
         return sendChainlinkRequestTo(oracleBytes32, ret, feeBytes32);
     }
 
@@ -282,11 +290,9 @@ contract SteakQuarterly is ChainlinkClient {
         require((SteakQuarterlyUtil.getWeekday(tempStamp) == 5) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) < 18), "Contract reward can only be validated and claimed on Friday, Saturday(Saturday before 18:00 UTC)");
 
         
-        
         getInitialApiData();
 
 
-        
         return true;
     }
 
@@ -298,43 +304,32 @@ contract SteakQuarterly is ChainlinkClient {
         
         require(msg.sender == owner, "Only the owner can trigger a payment claim.");
         require(locked, "Cannot claim an unlocked contract.");
+
         require(((tempStamp - startTimestamp) / 604800) > 12, "Cannot claim contract before 12 weeks have elapsed.");
-        //require((SteakQuarterlyUtil.getWeekday(tempStamp) == 5) || SteakQuarterlyUtil.getWeekday(tempStamp) == 6 || SteakQuarterlyUtil.getWeekday(tempStamp) == 0, "Contract reward can only be validated and claimed on Friday, Saturday, or Sunday UTC.");
-        //require((tempStamp - startTimestamp > 345600) && (tempStamp - startTimestamp < 712800),"Must claim contract before Monday UTC of the week following the contract being engaged by the buyer and after Thursday UTC of the week the contract was engaged by the buyer. Cannot claim otherwise.");
+
         
-        
-        //TIMING COMMENTED FOR TESTING ONLY
-        //require((now - startTimestamp) > 604800,"Cannot claim payment before 7 days have elapsed since reigsterBuyerModelName.");
-        //require((now - startTimestamp) < 777600,"Cannot claim payment after 9 days have elapsed since reigsterBuyerModelName.");
         emit Claimed();
         
+
         selfdestruct(owner);
 
 
-        
         return true;
     }
 
     function getInitialApiData() public
     {
-
-
-
         numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
 
         sellerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", sellerModelName,"\"){control}}")),"data.v2UserProfile.control");
 
         buyerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", buyerModelName,"\"){control}}")),"data.v2UserProfile.control");
-
-
     }
 
     function fulfillInt(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        //require(msg.sender == oracleInt, "only oracle can fullfil");
-
         dataAPIFloat[_requestId] = _APIresult;
-        //LATEST ROUND CALLS DONT WORK DO NOT USE THIS
+
 
         if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
@@ -345,11 +340,8 @@ contract SteakQuarterly is ChainlinkClient {
         
         if(callbackCount == 3)
         {
-
-
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
             "data.v2UserProfile.totalStake",10**18);
-
         }
         else if(callbackCount == 4)
         {
@@ -367,38 +359,33 @@ contract SteakQuarterly is ChainlinkClient {
             return;
         }
 
+
         callbackCount++;
-
-
     }
 
     function fulfillBytes32(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        //require(msg.sender == oracleInt, "only oracle can fullfil");
-
         dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
-        //LATEST ROUND CALLS DONT WORK DO NOT USE THIS
 
 
         callbackCount++;
-
-
     }
     
     function attemptCancel(bool checked) public
     {
         callbackCount = 0;
+        
         uint256 tempStamp = now;
+
+
         if(!checked)
         {
             bool condition = uint256(dataAPIFloat[sellerStakeRequestId]) < sellerStakePromise || dataAPIFloat[sellerCorrelationRequestId] != dataAPIFloat[buyerCorrelationRequestId];
 
             require(condition,"Seller must have failed contract check to cancel.");
 
-            
-
-
         }
+
 
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         
@@ -409,28 +396,9 @@ contract SteakQuarterly is ChainlinkClient {
         owner.transfer(payout);
         
         selfdestruct(buyer);
-        
-        verified = true;
      
         emit Contested();
                 
-        
-
-
-        
-            
-        //selfdestruct(owner);
     }
-
-
-    
-    
-
-
-
-
-       
-        
-
 
 }
