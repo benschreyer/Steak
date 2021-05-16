@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //Note 4/1/2021 currently late sub.s is checked by a failure of a node to callback because Numerai returned null to an API call for pending payout,
 //this works now, but if nodes ever switch to taking null to be 0 this will not work and late submissions will be accepted which is an error.
 
-// COMPILE WITH ENABLE OPTIMIZATION AT 800 RUNS SO IT IS SMALL ENOUGH FOR ETH
+// --COMPILE WITH ENABLE OPTIMIZATION AT 800 RUNS SO IT IS SMALL ENOUGH FOR ETH-- OLD DEP.
 
 pragma solidity ^0.6.0;
 
@@ -26,9 +26,9 @@ contract SteakQuarterly is ChainlinkClient {
     
 
     
-    mapping(bytes32 => int256) public dataAPI;
+    mapping(bytes32 => int256) public dataAPIFloat;
 
-    
+    mapping(bytes32 => string) public dataAPIString;
     
     
     event Constructed(string, uint256, uint256);
@@ -56,14 +56,12 @@ contract SteakQuarterly is ChainlinkClient {
 
     bytes32 public buyerCorrelationRequestId;
     bytes32 public sellerCorrelationRequestId;
-
-    bytes32 public sellerLatestRoundRequestId;
-    bytes32 public buyerLatestRoundRequestId;
-    bytes32 public numeraiLatestRoundRequestId;
     
     bytes32 public sellerStakeRequestId;
 
+    bytes32 public sellerControlRequestId;
 
+    bytes32 public buyerControlRequestId;
     
     //Seconds since Unix epoch
     uint256 public startTimestamp;
@@ -71,11 +69,17 @@ contract SteakQuarterly is ChainlinkClient {
     //Who deployed the contract and who engaged the contract
     address payable public owner;
     address payable public buyer;
+
+
+    //Oracle, jobId, and fee for getting bytes32
+    address public oracleBytes32 = 0x56dd6586DB0D08c6Ce7B2f2805af28616E082455;
+    bytes32 public jobIdBytes32 = "c128fbb0175442c8ba828040fdd1a25e";
+    uint256 public feeBytes32 = 0.1 * 10 ** 18;
     
     //Orcale, jobId, and fee for getting float
-    address public oracleInt = 0x1b666ad0d20bC4F35f218120d7ed1e2df60627cC;
-    bytes32 public jobIdInt = "553d941199004ceca20542cffd9c8555";
-    uint256 public feeInt = 0.05 * 10 ** 18;
+    address public oracleInt = 0x56dd6586DB0D08c6Ce7B2f2805af28616E082455;
+    bytes32 public jobIdInt = "2649fc4ca83c4016bfd2d15765592bee";
+    uint256 public feeInt = 0.1 * 10 ** 18;
     
 
     
@@ -203,7 +207,7 @@ contract SteakQuarterly is ChainlinkClient {
     
     
     
-    //Locks in the contract, retreives the modelID to be used for submissions based off of the model name, buyer should have already provided data scientist an upload only API key (public and public)
+    //Locks in the contract, buyer should have already provided data scientist an upload only API key and their model ID 
     function lock() public returns (bool success)
     {
         uint tempStamp = now;
@@ -258,6 +262,14 @@ contract SteakQuarterly is ChainlinkClient {
         return sendChainlinkRequestTo(oracleInt, ret, feeInt);
     }
 
+    function buildAndSendBytes32Request(string memory get, string memory path) public returns (bytes32 requestId)
+    {
+        Chainlink.Request memory ret = buildChainlinkRequest(jobIdInt, address(this), this.fulfillBytes32.selector);
+        ret.add("get",get);
+        ret.add("path",path);
+        return sendChainlinkRequestTo(oracleBytes32, ret, feeBytes32);
+    }
+
 
 
      function contest() public returns (bool success)
@@ -310,75 +322,87 @@ contract SteakQuarterly is ChainlinkClient {
 
         numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
 
+        sellerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", sellerModelName,"\"){control}}")),"data.v2UserProfile.control");
+
+        buyerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", buyerModelName,"\"){control}}")),"data.v2UserProfile.control");
+
 
     }
 
     function fulfillInt(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        require(msg.sender == oracleInt, "only oracle can fullfil");
+        //require(msg.sender == oracleInt, "only oracle can fullfil");
 
-        dataAPI[_requestId] = _APIresult;
+        dataAPIFloat[_requestId] = _APIresult;
         //LATEST ROUND CALLS DONT WORK DO NOT USE THIS
-        if(callbackCount == 0)
+
+        if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
+            attemptCancel(true);
+            return;
+        }
+
+        
+        if(callbackCount == 3)
+        {
+
+
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
             "data.v2UserProfile.totalStake",10**18);
-        }
-        else if(callbackCount == 1)
-        {
-            sellerLatestRoundRequestId =  buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={userActivities(username:\"",sellerModelName,"\",tournament:8){roundNumber}}")),
-            "data.userActivities.0.roundNumber",1);
-        }
-        else if(callbackCount == 2)
-        {
-            buyerLatestRoundRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={userActivities(username:\"",buyerModelName,"\",tournament:8){roundNumber}}")),
-            "data.userActivities.0.roundNumber",1);
-        }
-        else if(callbackCount == 3)
-        {
-            buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPI[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
-            "data.roundSubmissionPerformance.roundDailyPerformances.0.correlation",10**18);
+
         }
         else if(callbackCount == 4)
         {
-            sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPI[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
-            "data.roundSubmissionPerformance.roundDailyPerformances.0.correlation",10**18);
+            buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
+            "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
         else if(callbackCount == 5)
         {
-            buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPI[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{payoutPending}}}")),
-            "data.roundSubmissionPerformance.roundDailyPerformances.0.payoutPending",10**18);
+            sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
+            "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
         else if(callbackCount == 6)
         {
-            buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPI[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{payoutPending}}}")),
-            "data.roundSubmissionPerformance.roundDailyPerformances.0.payoutPending",10**18);
-        }
-        else if(callbackCount == 7)
-        {
-            attemptCancel();
+            attemptCancel(false);
+            return;
         }
 
         callbackCount++;
 
 
     }
-    
-    function attemptCancel() public
+
+    function fulfillBytes32(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
+        //require(msg.sender == oracleInt, "only oracle can fullfil");
 
-        uint256 tempStamp = now;
+        dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
+        //LATEST ROUND CALLS DONT WORK DO NOT USE THIS
 
-        bool condition = dataAPI[sellerLatestRoundRequestId] != dataAPI[buyerLatestRoundRequestId] || dataAPI[buyerLatestRoundRequestId] != dataAPI[numeraiLatestRoundRequestId] || uint256(dataAPI[sellerStakeRequestId]) < sellerStakePromise || dataAPI[sellerCorrelationRequestId] != dataAPI[buyerCorrelationRequestId];
 
-        require(condition,"Seller must has failed contract check to cancel.");
+        callbackCount++;
 
+
+    }
+    
+    function attemptCancel(bool checked) public
+    {
         callbackCount = 0;
+        uint256 tempStamp = now;
+        if(!checked)
+        {
+            bool condition = uint256(dataAPIFloat[sellerStakeRequestId]) < sellerStakePromise || dataAPIFloat[sellerCorrelationRequestId] != dataAPIFloat[buyerCorrelationRequestId];
+
+            require(condition,"Seller must have failed contract check to cancel.");
+
+            
+
+
+        }
 
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
-    
-        link.transfer(owner, link.balanceOf(address(this)));
         
+        link.transfer(owner, link.balanceOf(address(this)));
         
         uint256 payout = ((tempStamp - startTimestamp) / 604800) * ((address(this).balance)/12);
         
