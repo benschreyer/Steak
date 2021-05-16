@@ -22,13 +22,14 @@ import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm
 
 import "SteakQuarterlyUtil.sol";
 
-contract SteakQuarterly is ChainlinkClient {
+contract SteakQuarterly is ChainlinkClient 
+{
     
 
     
-    mapping(bytes32 => int256) public dataAPIFloat;
+    mapping(bytes32 => int256) private dataAPIFloat;
 
-    mapping(bytes32 => string) public dataAPIString;
+    mapping(bytes32 => string) private dataAPIString;
     
     
     event Constructed(string, uint256, uint256);
@@ -51,17 +52,17 @@ contract SteakQuarterly is ChainlinkClient {
     string public sellerModelName;
     string public buyerModelName;
 
-    uint256 public callbackCount = 0;
+    uint256 private callbackCount = 0;
 
-    bytes32 public buyerCorrelationRequestId;
+    bytes32 private buyerCorrelationRequestId;
 
-    bytes32 public sellerCorrelationRequestId;
+    bytes32 private sellerCorrelationRequestId;
     
-    bytes32 public sellerStakeRequestId;
+    bytes32 private sellerStakeRequestId;
 
-    bytes32 public sellerControlRequestId;
+    bytes32 private sellerControlRequestId;
 
-    bytes32 public buyerControlRequestId;
+    bytes32 private buyerControlRequestId;
 
     
     //Seconds since Unix epoch
@@ -230,6 +231,10 @@ contract SteakQuarterly is ChainlinkClient {
         return true;
     }
     
+
+
+
+    //Buyer reclaim ethereum is seller doesnt start the contract
     function reclaim() public returns (bool success)
     {
         uint256 tempStamp = now;
@@ -253,7 +258,11 @@ contract SteakQuarterly is ChainlinkClient {
 
     }
     
-    function buildAndSendIntRequest(string memory get, string memory path, int256 times) public returns (bytes32 requestId)
+
+
+
+    //Send a chainlink request for a signed int with a URL, json path, and multiplication to remove n decimal places
+    function buildAndSendIntRequest(string memory get, string memory path, int256 times) private returns (bytes32 requestId)
     {
         Chainlink.Request memory ret = buildChainlinkRequest(jobIdInt, address(this), this.fulfillInt.selector);
 
@@ -266,7 +275,11 @@ contract SteakQuarterly is ChainlinkClient {
         return sendChainlinkRequestTo(oracleInt, ret, feeInt);
     }
 
-    function buildAndSendBytes32Request(string memory get, string memory path) public returns (bytes32 requestId)
+
+
+
+    //Send a chainlink request for a string
+    function buildAndSendBytes32Request(string memory get, string memory path) private returns (bytes32 requestId)
     {
         Chainlink.Request memory ret = buildChainlinkRequest(jobIdBytes32, address(this), this.fulfillBytes32.selector);
 
@@ -280,7 +293,9 @@ contract SteakQuarterly is ChainlinkClient {
 
 
 
-     function contest() public returns (bool success)
+
+    //Attempt to cancel contract early since seller did not submit on time, submitted other predictions, didnt stake
+    function contest() public returns (bool success)
     {
         uint tempStamp = now;
         
@@ -295,6 +310,8 @@ contract SteakQuarterly is ChainlinkClient {
 
         return true;
     }
+
+
 
      
     //Calls a chain of API call functions to confirm submissions are equivalent on buyer and data scientist models and updated for the most recently started round, if they are destroys the contract sending the ETH and leftover LINK to the data scientist, otherwise just send leftover LINK to the data scientist
@@ -317,7 +334,11 @@ contract SteakQuarterly is ChainlinkClient {
         return true;
     }
 
-    function getInitialApiData() public
+
+
+
+    //Get Round number and control, we need these first otherwise behavior of other fetches may be undefined or unceccesary spending of LINK
+    function getInitialApiData() private
     {
         numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
 
@@ -326,6 +347,10 @@ contract SteakQuarterly is ChainlinkClient {
         buyerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", buyerModelName,"\"){control}}")),"data.v2UserProfile.control");
     }
 
+
+
+
+    //Take in int's and store by requestID, also trigger new requests to maximize the chainlink oracles paying for gas, since they pay for this callback but will not pay over a certain gas price (hence if statements to do one call at a time since all at once costs too much)
     function fulfillInt(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
         dataAPIFloat[_requestId] = _APIresult;
@@ -363,6 +388,10 @@ contract SteakQuarterly is ChainlinkClient {
         callbackCount++;
     }
 
+
+
+
+    //Read in bytes32 from chainlink oracle, log that a callback was received
     function fulfillBytes32(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
         dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
@@ -371,10 +400,14 @@ contract SteakQuarterly is ChainlinkClient {
         callbackCount++;
     }
     
-    function attemptCancel(bool checked) public
+
+
+
+    //Final step, check if contract was broken (will have checked true if attempt cancel resulted from the seller not submitting on time or not staking)
+    function attemptCancel(bool checked) private
     {
         callbackCount = 0;
-        
+
         uint256 tempStamp = now;
 
 
