@@ -1,50 +1,35 @@
-import numerapi
 import requests
 #"data.rounds.0.number"
 
-seller = "integration_test_7"
-buyer = "jefferythewind"
-sellerStakePromise = 0
-
-def checkContractFailure(seller, buyer, sellerStakePromise, startStamp):
-
-    roundNum = requests.get("https://api-tournament.numer.ai/graphql?query={rounds{number}}").json()["data"]["rounds"][0]["number"]
-
-    sellerStake = requests.get("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\""+seller+"\"){totalStake}}").json()["data"]["v2UserProfile"]["totalStake"]
-    sellerLatestRound = requests.get("https://api-tournament.numer.ai/graphql?query={userActivities(username:\""+seller+"\",tournament:8){roundNumber}}").json()["data"]["userActivities"][0]["roundNumber"]
-
-    print("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\""+buyer+"\"){dailySubmissionPerformances{roundNumber}}}")
-    buyerLatestRound = requests.get("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\""+buyer+"\"){dailySubmissionPerformances{roundNumber}}}").json()["data"]["v2UserProfile"][0]["roundNumber"]
 
 
-    print("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+ str(buyerLatestRound) +",username:\""+ buyer +"\"){roundDailyPerformances{correlation}}}")
-    buyerLatestCorrelation = requests.get("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+ str(buyerLatestRound) +",username:\""+ buyer +"\"){roundDailyPerformances{correlation}}}").json()["data"]["roundSubmissionPerformance"]["roundDailyPerformances"][0]["correlation"]
-    sellerLatestCorrelation = requests.get("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+ str(sellerLatestRound) +",username:\""+ seller +"\"){roundDailyPerformances{correlation}}}").json()["data"]["roundSubmissionPerformance"]["roundDailyPerformances"][0]["correlation"]
+def check_line(lin):
+    saved_user_string = lin.split(",")
+    if(len(saved_user_string) == 5):
+        #print(requests.get("https://api-tournament.numer.ai/graphql?query={rounds{number}}").json())
+        roundNum = requests.get("https://api-tournament.numer.ai/graphql?query={rounds{number}}").json()["data"]["rounds"][0]["number"] - 1
+        controlBuyer = None
+        try:
+            controlBuyer = requests.get("https://api-tournament.numer.ai/?query={v2UserProfile(username:\""+ saved_user_string[1] +"\"){control}}").json()["data"]["v2UserProfile"]["control"]
+        except:
+            pass
+        controlSeller = None
+        try:
+            controlSeller = requests.get("https://api-tournament.numer.ai/?query={v2UserProfile(username:\""+ saved_user_string[0] +"\"){control}}").json()["data"]["v2UserProfile"]["control"]
+        except:
+            pass
+        sellerStake = 0.0
+        try:
+            sellerStake = requests.get("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\""+saved_user_string[0]+"\"){totalStake}}").json()["data"]["v2UserProfile"]["totalStake"]
+        except:
+            pass
 
-    #("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPI[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{payoutPending}}}")),
-            #"data.roundSubmissionPerformance.roundDailyPerformances.0.payoutPending",10**18);
-
-    buyerPayoutPending = requests.get("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+str(buyerLatestRound)+",username:\""+buyer+"\"){roundDailyPerformances{payoutPending}}}").json()["data"]["roundSubmissionPerformance"]["roundDailyPerformances"][0]["payoutPending"]
-    sellerPayoutPending = requests.get("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+str(sellerLatestRound)+",username:\""+seller+"\"){roundDailyPerformances{payoutPending}}}").json()["data"]["roundSubmissionPerformance"]["roundDailyPerformances"][0]["payoutPending"]
-
-    if(buyerLatestCorrelation != sellerLatestCorrelation):
-        return "Submissions rounds not identical\nBUYER:" + str(buyerLatestRound) + "\nSELLER:"+str(sellerLatestRound)
-
-    if(buyerLatestCorrelation != sellerLatestCorrelation):
-        return "Submissions not identical\nBUYER:" + str(buyerLatestCorrelation) + "\nSELLER:"+str(sellerLatestCorrelation)
-
-
-
-    print("ROUND NUMBER",roundNum)
-    print("SELLER STAKE", sellerStake)
-    print("SELLER LATEST RND", sellerLatestRound)
-    print("BUYER LATEST RND", buyerLatestRound)
-
-    print("BUYER LATEST CORR ",buyerLatestCorrelation)
-    print("SELLER LATEST CORR ",sellerLatestCorrelation)
-
-    print("BUYER PAYOUT PENDING",buyerPayoutPending)
-
-    print("SELLER PAYOUT PENDING",sellerPayoutPending)
-
-print(checkContractFailure(seller,buyer,sellerStakePromise,0))
+        if(controlBuyer is None or controlSeller is None or float(sellerStake) < float(saved_user_string[2])):
+            print("CONTRACT WAS NOT HONORED, MODELS LATE/UNSUBMITTED OR SELLER DID NOT STAKE AS MUCH AS THEY PROMISED")
+        else:
+            sellerCorr = requests.get("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+str(roundNum)+",username:\""+saved_user_string[0]+"\"){roundDailyPerformances{correlation}}}").json()["data"]["roundSubmissionPerformance"]["roundDailyPerformances"][-1]["correlation"]
+            buyerCorr = requests.get("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:"+str(roundNum)+",username:\""+saved_user_string[1]+"\"){roundDailyPerformances{correlation}}}").json()["data"]["roundSubmissionPerformance"]["roundDailyPerformances"][-1]["correlation"]
+            if(buyerCorr != sellerCorr):
+                print("CORRELATIONS DONT MATCH CONTRACT NOT HONORED")
+    #print(roundNum,controlBuyer,controlSeller,sellerStake,sellerCorr,buyerCorr)
+check_line("bensch_c,bensch_a,1.31232,9932.213,testmay2@gmail.com")
