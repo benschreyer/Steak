@@ -179,10 +179,16 @@ function retreiveContract() {
         
         
         var dateT = new Date(0);
-        dateT.setUTCSeconds(info);
+
+        infoBigNum = new BigNumber(info);
+
+        infoEndBigNum =BigNumber.sum(infoBigNum,7257600);
+
+        dateT.setUTCSeconds(infoBigNum.toString());
         dateTEnd = new Date(0);
-        dateTEnd.setUTCSeconds(info + 7257600);
-        console.log(info == 0);
+        
+        dateTEnd.setUTCSeconds(infoEndBigNum.toString());
+        console.log(info, typeof info,"INFO TYPE");
         startDate = dateT;
         if(info != 0 )
         {
