@@ -187,7 +187,7 @@ function retreiveContract() {
         if(info != 0 )
         {
          document.getElementById('startStampLabel').innerHTML = "Start Date: " + String(dateT.toUTCString().replace("GMT","UTC"));
-         document.getElementById('endStampLabel').innerHTML = "End Date: " + String(dateT.toUTCString().replace("GMT","UTC"));
+         document.getElementById('endStampLabel').innerHTML = "End Date: " + String(dateTEnd.toUTCString().replace("GMT","UTC"));
         }
         else
         {
