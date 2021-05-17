@@ -148,35 +148,10 @@ function retreiveContract() {
         document.getElementById('dataScientistStakePromiseLabel').innerHTML = "Promised Data Scientist Stake: " + (new BigNumber(info)).shiftedBy(-18).toString() + " NMR";
     });
 
-    contract.methods.dataScientistStakeActual().call().then(function(info) {
-        
-        if(info != 1)
-        {
-            document.getElementById('dataScientistStakeActualLabel').innerHTML = "Actual Data Scientist Stake: " + (new BigNumber(info)).shiftedBy(-18).toString() + " NMR";
-        }
-        else
-        {
-            document.getElementById('dataScientistStakeActualLabel').innerHTML = "Actual Data Scientist Stake: Not Determined.";
-        }
-        
-    });
-
     contract.methods.locked().call().then(function(info) {
         
 
         document.getElementById('lockedLabel').innerHTML = "Locked: " + String(info);
-    });
-
-    contract.methods.roundNumber().call().then(function(info) {
-        
-        if(info != 0)
-        {
-            document.getElementById('roundNumberLabel').innerHTML = "Round Number: " + String(info);
-        }
-        else
-        {
-            document.getElementById('roundNumberLabel').innerHTML = "Round Number: Not Determined";
-        }
     });
 
     contract.methods.birthStamp().call().then(function(info) {
@@ -191,11 +166,14 @@ function retreiveContract() {
         
         var dateT = new Date(0);
         dateT.setUTCSeconds(info);
+        dateTEnd = new Date(0);
+        dateTEnd.setUTCSeconds(info + 7257600);
         console.log(info == 0);
         startDate = dateT;
         if(info != 0 )
         {
          document.getElementById('startStampLabel').innerHTML = "Start Date: " + String(dateT.toUTCString().replace("GMT","UTC"));
+         document.getElementById('endStampLabel').innerHTML = "End Date: " + String(dateT.toUTCString().replace("GMT","UTC"));
         }
         else
         {
@@ -215,96 +193,7 @@ function retreiveContract() {
         }
     });
 
-    contract.methods.buyerModelId().call().then(function(info) {
-        
-        if(info.length > 0)
-        {
-            document.getElementById('buyerModelIdLabel').innerHTML = "Buyer Model Id: " + String(info);
-        }
-        else
-        {
-            document.getElementById('buyerModelIdLabel').innerHTML = "Buyer Model Id: Not Determined";
-        }
-    });
 
-    contract.methods.metrics(3).call().then(function(info) {
-        
-        if(info != -1 && info != 1)
-        {
-            document.getElementById('buyerModelCORRLabel').innerHTML = "Buyer Model Live CORR: " +(new BigNumber(info)).shiftedBy(-18).toString();
-        }
-        else
-        {
-            document.getElementById('buyerModelCORRLabel').innerHTML = "Buyer Model Live CORR: Not Determined";
-        }
-    });
-
-    contract.methods.metrics(4).call().then(function(info) {
-        
-        if(info != -1 && info != 1)
-        {
-            document.getElementById('buyerModelMMCLabel').innerHTML = "Buyer Model Live MMC: " + (new BigNumber(info)).shiftedBy(-18).toString();
-        }
-        else
-        {
-            document.getElementById('buyerModelMMCLabel').innerHTML = "Buyer Model Live MMC: Not Determined";
-        }
-    });
-
-    contract.methods.metrics(5).call().then(function(info) {
-        
-        if(info != -1 && info != 1)
-        {
-            document.getElementById('buyerModelFNCLabel').innerHTML = "Buyer Model Live FNC: " +(new BigNumber(info)).shiftedBy(-18).toString();
-        }
-        else
-        {
-            document.getElementById('buyerModelFNCLabel').innerHTML = "Buyer Model Live FNC: Not Determined";
-        }
-    });
-
-    /*contract.methods.payoutPending(0).call().then(function(info) {
-        
-
-        document.getElementById('buyerModelPendingPayoutLabel').innerHTML = "Buyer Model Live Pending Payout: " + (new BigNumber(info)).shiftedBy(-18).toString();
-
-    });*/
-
-    contract.methods.metrics(0).call().then(function(info) {
-        
-        if(info != -1 && info != 1)
-        {
-            document.getElementById('sellerModelCORRLabel').innerHTML = "Seller Model Live CORR: " + (new BigNumber(info)).shiftedBy(-18).toString();
-        }
-        else
-        {
-            document.getElementById('sellerModelCORRLabel').innerHTML = "Seller Model Live CORR: Not Determined";
-        }
-    });
-
-    contract.methods.metrics(1).call().then(function(info) {
-        
-        if(info != -1 && info != 1)
-        {
-            document.getElementById('sellerModelMMCLabel').innerHTML = "Seller Model Live MMC: " + (new BigNumber(info)).shiftedBy(-18).toString();
-        }
-        else
-        {
-            document.getElementById('sellerModelMMCLabel').innerHTML = "Seller Model Live MMC: Not Determined";
-        }
-    });
-
-    contract.methods.metrics(2).call().then(function(info) {
-        
-        if(info != -1 && info != 1)
-        {
-            document.getElementById('sellerModelFNCLabel').innerHTML = "Seller Model Live FNC: " + (new BigNumber(info)).shiftedBy(-18).toString();
-        }
-        else
-        {
-            document.getElementById('sellerModelFNCLabel').innerHTML = "Seller Model Live FNC: Not Determined";
-        }
-    });
 
     /*contract.methods.payoutPending(1).call().then(function(info) {
         
