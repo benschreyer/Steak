@@ -409,6 +409,22 @@ function reclaim() {
     );
 }
 
+function contest() {
+    if (!setUpCheck(false)) {
+        return;
+    }
+    actionDesc = "Contest.";
+    toTransact = contract.methods.contest();
+    gasEstimateCheckModalWrapper(toTransact, function() {
+            sendWrapper(toTransact, {
+                from: account
+            }, actionDesc);
+        }
+
+
+    );
+}
+
 function kick() {
     if (!setUpCheck(false)) {
         return;
