@@ -355,7 +355,7 @@ contract SteakQuarterly is ChainlinkClient
     {
         dataAPIFloat[_requestId] = _APIresult;
 
-
+        //If the control of a model is null, then the returned string is empty and has length 0
         if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
             attemptCancel(true);
