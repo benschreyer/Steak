@@ -53,6 +53,8 @@ contract SteakQuarterly is ChainlinkClient
     string public buyerModelName;
 
     uint256 private callbackCount = 0;
+    
+    bytes32 private numeraiLatestRoundRequestId;
 
     bytes32 private buyerCorrelationRequestId;
 
@@ -392,7 +394,7 @@ contract SteakQuarterly is ChainlinkClient
 
 
     //Read in bytes32 from chainlink oracle, log that a callback was received
-    function fulfillBytes32(bytes32 _requestId, int256 _APIresult) external recordChainlinkFulfillment(_requestId)
+    function fulfillBytes32(bytes32 _requestId, bytes32 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
         dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
 
