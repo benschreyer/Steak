@@ -36,7 +36,7 @@
 					</div> <a  onclick="retreiveContract()" class="btn btn-primary">Retreive</a><i class="btn btn-primary" data-toggle="modal" data-target="#emailSubscribeModal" style="margin-left:0.5vw"><i class="fa fa-bell"  ></i></i></form>
 				<br/>
 				<div style="height:85vh;
-        overflow-y: scroll;">
+        ">
 				<ul class="list-group">
 					<li class="list-group-item" id="addressLabel">Contract Address:  <a data-container="body" data-toggle="tooltip" data-placement="top" title="Copy Shareable Steak View Link" style = "float:right"  onclick ="shareableLink()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16">
 						<path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>
@@ -200,7 +200,7 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th scope="col" class="bg-primary">Valid Actions</th>
+                    <th scope="col" class="bg-primary">First Week Valid Actions</th>
                     <th scope="col" calendarColumn = "0">Saturday After 18:00 UTC</th>
                     <th scope="col" calendarColumn = "1">Sunday Full UTC</th>
                     <th scope="col" calendarColumn = "2">Monday Before 14:00 UTC</th>
@@ -208,9 +208,9 @@
                     <th scope="col" calendarColumn = "4">Wednesday Full UTC</th>
                     <th scope="col" calendarColumn = "5">Thursday Full UTC</th>
                     <th scope="col" calendarColumn = "6">Friday Full UTC</th>
-                    <th scope="col" calendarColumn = "7">Saturday Full UTC</th>
-                    <th scope="col" calendarColumn = "8">Sunday Full UTC</th>
-                    <th scope="col" calendarColumn = "9">Monday Full UTC</th>
+                    <th scope="col" calendarColumn = "7">Saturday Before 18:00 UTC</th>
+                    <th scope="col" calendarColumn = "8">12 Weeks out</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -219,13 +219,13 @@
                     <td class="success" calendarColumn = "0nb" >Register Your Model</td>
                     <td class="success" calendarColumn = "1nb" >Register Your Model</td>
                     <td class="danger" calendarColumn = "2nb" >Round Close</td>
-                    <td calendarColumn = "3nb" ></td>
-                    <td calendarColumn = "4nb" ></td>
+                    <td class = "success" calendarColumn = "3nb"  >Reclaim becomes valid if contract wasnt locked</td>
+                    <td class = "success" calendarColumn = "4nb" ><b>Reclaim is valid forever if contract not locked</b></td>
                     <td class="danger" calendarColumn = "5nb" >First Scores</td>
-                    <td calendarColumn = "6nb" ></td>
-                    <td calendarColumn = "7nb" ></td>
+                    <td class="success" calendarColumn = "6nb" >Contest<br/><b>(Valid any week)</b></td>
+                    <td class="success" calendarColumn = "7nb" >Contest<br/><b>(Valid any week)</b></td>
                     <td calendarColumn = "8nb" ></td>
-                    <td class="success" calendarColumn = "9nb" >Reclaim (Valid from here on)</td>
+
                   </tr>
                   <tr>
                     <th scope="row">For Seller</th>
@@ -235,10 +235,10 @@
                     <td calendarColumn = "3nb"></td>
                     <td calendarColumn = "4nb"></td>
                     <td calendarColumn = "5nb"></td>
-                    <td class="info" calendarColumn = "6nb">Claim</td>
-                    <td class="info" calendarColumn = "7nb">Claim</td>
-                    <td class="info" calendarColumn = "8nb">Claim</td>
-                    <td calendarColumn = "9nb"></td>
+                    <td  calendarColumn = "6nb"></td>
+                    <td calendarColumn = "7nb"></td>
+                    <td  calendarColumn = "8nb"  class = "info">Claim</td>
+
                   </tr>
                   <tr>
                     <th scope="row"></th>
@@ -251,10 +251,11 @@
                     <td calendarColumn = "6"></td>
                     <td calendarColumn = "7"></td>
                     <td calendarColumn = "8"></td>
-                    <td calendarColumn = "9"></td>
+
                   </tr>
                 </tbody>
               </table>
+			  <h5>*After twelve weeks, sellers can claim their Ethereum payment using the claim functionality</h5>
               </div>
             </div>
           </div>
