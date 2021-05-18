@@ -1,0 +1,1 @@
+sudo docker run -v /home/ben/:/sources ethereum/solc:0.6.12 -o /sources/ --abi --bin /sources/SteakQuarterly.sol --libraries "SteakQuarterlyUtil:0x0BDa538d535bBA5AE7BF22b9e231C42cE99d9667" --overwrite --optimize-runs=50 --optimize
