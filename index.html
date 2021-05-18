@@ -11,6 +11,7 @@
 	<script src = "bignumber.js"></script>
 	<script src="./index.js"></script>
 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	
   <link rel="icon" href="favicon_32.png"  type="image/icon type">
 </head>
@@ -20,7 +21,7 @@
 		<div class="row">
 			<div class="col-sm-4">
 				<h3 class="page-header" >
-        View Contract</h3>
+        View Contract </h3>
 				<form class="form-inline" role="form">
 					<div class="form-group">
 						<table>
@@ -32,7 +33,7 @@
 									<input class="form-control" id="newInfo"> </td>
 							</tr>
 						</table>
-					</div> <a  onclick="retreiveContract()" class="btn btn-primary">Retreive</a></form>
+					</div> <a  onclick="retreiveContract()" class="btn btn-primary">Retreive</a><i class="btn btn-primary" data-toggle="modal" data-target="#emailSubscribeModal" style="margin-left:0.5vw"><i class="fa fa-bell"  ></i></i></form>
 				<br/>
 				<div style="height:85vh;
         overflow-y: scroll;">
@@ -41,11 +42,11 @@
 						<path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>
 						<path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"/>
 					  </svg></a></li>
-					<li class="list-group-item" id="dataScientistModelNameLabel">Data Scientist Model Name:
+					<li class="list-group-item" id="sellerModelNameLabel">Data Scientist Model Name:
 						<a ></a>
 					</li>
 					<li class="list-group-item" id="costETHLabel">Contract Cost:</li>
-					<li class="list-group-item" id="dataScientistStakePromiseLabel">Promised Data Scientist Stake:</li>
+					<li class="list-group-item" id="sellerStakePromiseLabel">Promised Data Scientist Stake:</li>
 					<li class="list-group-item" id="lockedLabel">Locked:</li>
 					<li class="list-group-item" id="birthStampLabel">Birth Date:</li>
 					<li class="list-group-item" id="startStampLabel">Start Date:</li>
@@ -261,7 +262,27 @@
 			</div>
 
 		</div>
+	
+	<div id="emailSubscribeModal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+					<h5 class="modal-title">Subscribe to Email Notifications?</h5>
+					
+				</div>
+				<div class="modal-body">
+					<p>Subscribing to email notifications will alert you when a contract has possbily been breached, this is checked every Friday the day after scores are released</p>
+					<label>Email to Notify:</label><input class="form-control" id="email"> 
+				</div>
+				<div class="modal-footer">
 
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					<a class="btn btn-primary" data-dismiss="modal" onclick="requestSubscribe()">Subscribe Contract</a>
+				</div>
+			</div>
+		</div>
+	</div>
     
 
 	<div id="gasEstimationFailedModal" class="modal fade" tabindex="-1" role="dialog">
