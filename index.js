@@ -300,6 +300,7 @@ function registerBuyerName() {
     }
 
     actionDesc = "Register Buyer Name.";
+    print(contract,"IMPORTANT CONTRACT");
     toTransact = contract.methods.registerBuyerModelName($("#buyerModelNameInput").val().trim());
     gasEstimateCheckModalWrapper(toTransact, function() {
         contract.methods.costETH().call().then(function(info) {
