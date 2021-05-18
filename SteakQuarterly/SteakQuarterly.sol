@@ -329,6 +329,10 @@ contract SteakQuarterly is ChainlinkClient
         
         emit Claimed();
         
+        LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
+        
+        link.transfer(owner, link.balanceOf(address(this)));
+        
 
         selfdestruct(owner);
 
