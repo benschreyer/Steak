@@ -10,12 +10,10 @@ def check_line(lin):
     saved_user_string = lin.split(",")
     if(len(saved_user_string) == 5):
         #print(requests.get("https://api-tournament.numer.ai/graphql?query={rounds{number}}").json())
-<<<<<<< HEAD
+
         if(time.gmtime().tm_sec > int(saved_user_string[3])):
             return ""
-=======
-        if(time.gmtime().tm_sec > int(saved_user_string[3]))
->>>>>>> 2a8e23c1539b4db1f59ab22491a008f0546aeff4
+
         roundNum = requests.get("https://api-tournament.numer.ai/graphql?query={rounds{number}}").json()["data"]["rounds"][0]["number"]
         controlBuyer = None
         try:
