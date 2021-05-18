@@ -224,7 +224,7 @@ contract SteakQuarterly is ChainlinkClient
         require((SteakQuarterlyUtil.getWeekday(tempStamp) == 0) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
-        require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.1 LINK total to operate once locked, current LINK balance is under 0.1.");
+        require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.5 LINK total to operate once locked, current LINK balance is under 0.5.");
 
         
         locked = true;
