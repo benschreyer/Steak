@@ -137,8 +137,6 @@ contract SteakQuarterlyDelegate is ChainlinkClient
 
         //Chainlink setup
         setPublicChainlinkToken();
-        
-
         emit Constructed(sellerModelName, costETH, sellerStakePromise);
 
     }
