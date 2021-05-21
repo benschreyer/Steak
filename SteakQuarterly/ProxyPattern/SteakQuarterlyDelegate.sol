@@ -25,23 +25,13 @@ contract SteakQuarterlyDelegate is ChainlinkClient
 {
     
 
-    
+    address public debugAddr;
     mapping(bytes32 => int256) private dataAPIFloat;
 
     mapping(bytes32 => string) private dataAPIString;
     
     
-    event Constructed(string, uint256, uint256);
-  
-    event BuyerModelNameRegistered(string, uint256);
-    
-    event Kicked(string);
-  
-    event Locked(string, string);
-    
-    event Contested();
-    
-    event Claimed();
+
     
     
     //bensch Kovan Test Network wallet for 1% fee
@@ -104,17 +94,33 @@ contract SteakQuarterlyDelegate is ChainlinkClient
     //Promised model stake by seller, should be a conservative underestimate ie 50% or less of actual stake
     uint256 public sellerStakePromise;
     
+    event Constructed(string, uint256, uint256);
+  
+    event BuyerModelNameRegistered(string, uint256);
     
+    event Kicked(string);
+  
+    event Locked(string, string);
+    
+    event Contested();
+    
+    event Claimed();
     /**
      * Network: Kovan
      * market.link
      * Fee: 0.1 LINK
      */
      
+     constructor() public
+     {
+         
+     }
+     
     //Seller of the submission A.K.A. data scientist constructs the contract promising to stake _sellerStakePromise NMR on their submission on _sellerModelName and expects atleast _costETH ethereum for their submission
     //Note 1 Ethereum is represented on the block chain as an unsigned integer with value of 10 ** 18 or 10 ^ 18 or 1000000000000000000, the same is true for LINK and NMR
-    constructor(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public 
+    function initialize(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public 
     {
+        require(owner == msg.sender,"Only owner can initialize contract");
 
         birthStamp = now;
 
@@ -132,7 +138,7 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         
 
         //Give ownership to contract creator
-        owner = msg.sender;
+        
         
 
         //Chainlink setup
@@ -209,19 +215,22 @@ contract SteakQuarterlyDelegate is ChainlinkClient
     //Locks in the contract, buyer should have already provided data scientist an upload only API key and their model ID 
     function lock() public returns (bool success)
     {
+        
+        debugAddr = msg.sender;
+        
         uint tempStamp = now;
         
         
-        require(msg.sender == owner, "Only owner can lock contract.");
-        require(!locked, "Cannot lock contract that is already locked.");
-        require(buyer != address(0),"No buyer to lock.");
-        require(bytes(buyerModelName).length != 0,"No buyerModelName to lock.");
+        //require(msg.sender == owner, "Only owner can lock contract.");
+        //require(!locked, "Cannot lock contract that is already locked.");
+        //require(buyer != address(0),"No buyer to lock.");
+        //require(bytes(buyerModelName).length != 0,"No buyerModelName to lock.");
 
-        require((tempStamp - startTimestamp) < 158400,"Cannot lock contract that was entered by buyer over 44 hours ago.");
-        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
+        //require((tempStamp - startTimestamp) < 158400,"Cannot lock contract that was entered by buyer over 44 hours ago.");
+        //require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
-        require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.5 LINK total to operate once locked, current LINK balance is under 0.5.");
+        //require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.5 LINK total to operate once locked, current LINK balance is under 0.5.");
 
         
         locked = true;
@@ -359,29 +368,29 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         dataAPIFloat[_requestId] = _APIresult;
 
         //If the control of a model is null, then the returned string is empty and has length 0
-        if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
+        if(callbackCount >= 2 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
             attemptCancel(true);
             return;
         }
 
         
-        if(callbackCount == 3)
+        if(callbackCount == 2)
         {
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
             "data.v2UserProfile.totalStake",10**18);
         }
-        else if(callbackCount == 4)
+        else if(callbackCount == 3)
         {
             buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 5)
+        else if(callbackCount == 4)
         {
             sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 6)
+        else if(callbackCount == 5)
         {
             attemptCancel(false);
             return;

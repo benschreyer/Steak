@@ -362,29 +362,29 @@ contract SteakQuarterly is ChainlinkClient
         dataAPIFloat[_requestId] = _APIresult;
 
         //If the control of a model is null, then the returned string is empty and has length 0
-        if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
+        if(callbackCount >= 2 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
             attemptCancel(true);
             return;
         }
 
         
-        if(callbackCount == 3)
+        if(callbackCount == 2)
         {
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
             "data.v2UserProfile.totalStake",10**18);
         }
-        else if(callbackCount == 4)
+        else if(callbackCount == 3)
         {
             buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 5)
+        else if(callbackCount == 4)
         {
             sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 6)
+        else if(callbackCount == 5)
         {
             attemptCancel(false);
             return;

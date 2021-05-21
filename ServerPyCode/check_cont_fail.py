@@ -44,8 +44,8 @@ def send_warning(ema,msg):
         #The mail addresses and password
         
         mail_content = msg
-        sender_address = "bogachup1234@gmail.com"
-        sender_pass = 'xxx'
+        sender_address = ""
+        sender_pass = ''
         receiver_address = ema
         #Setup the MIME
         message = MIMEMultipart()
