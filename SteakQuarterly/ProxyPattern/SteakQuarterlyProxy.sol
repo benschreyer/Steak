@@ -39,10 +39,8 @@ contract SteakQuarterlyProxy {
     
    
 
-    address debugAddr;
-    mapping(bytes32 => int256) private dataAPIFloat;
+    address public debugAddr;
 
-    mapping(bytes32 => string) private dataAPIString;
     
     
 
@@ -108,6 +106,10 @@ contract SteakQuarterlyProxy {
     //Promised model stake by seller, should be a conservative underestimate ie 50% or less of actual stake
     uint256 public sellerStakePromise;
     
+    mapping(bytes32 => int256) private dataAPIFloat;
+
+    mapping(bytes32 => string) private dataAPIString;
+    //Chainlink class fields since this contract isnt ChainlinkClient
     uint256 constant internal LINK = 10**18;
     uint256 constant private AMOUNT_OVERRIDE = 0;
     address constant private SENDER_OVERRIDE = address(0);
@@ -126,7 +128,7 @@ contract SteakQuarterlyProxy {
     event ChainlinkRequested(bytes32 indexed id);
     event ChainlinkFulfilled(bytes32 indexed id);
     event ChainlinkCancelled(bytes32 indexed id);
-    
+    //Events
     event Constructed(string, uint256, uint256);
   
     event BuyerModelNameRegistered(string, uint256);
@@ -174,7 +176,7 @@ contract SteakQuarterlyProxy {
     function _delegate() internal {
         
         
-        address implementation =  0xA8f4f5686257C247711440e290971db13D8F2C5e;
+        address implementation =  0x270d05292Bc96690b6c066444fB282ad261aD016;
         // solhint-disable-next-line no-inline-assembly
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly

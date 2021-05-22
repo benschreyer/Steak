@@ -26,9 +26,7 @@ contract SteakQuarterlyDelegate is ChainlinkClient
     
 
     address public debugAddr;
-    mapping(bytes32 => int256) private dataAPIFloat;
 
-    mapping(bytes32 => string) private dataAPIString;
     
     
 
@@ -93,6 +91,10 @@ contract SteakQuarterlyDelegate is ChainlinkClient
     
     //Promised model stake by seller, should be a conservative underestimate ie 50% or less of actual stake
     uint256 public sellerStakePromise;
+    
+    mapping(bytes32 => int256) private dataAPIFloat;
+
+    mapping(bytes32 => string) private dataAPIString;
     
     event Constructed(string, uint256, uint256);
   
@@ -208,9 +210,8 @@ contract SteakQuarterlyDelegate is ChainlinkClient
 
         return true;
     }
-    
-    
-    
+
+
     
     //Locks in the contract, buyer should have already provided data scientist an upload only API key and their model ID 
     function lock() public returns (bool success)
@@ -220,8 +221,9 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         
         uint tempStamp = now;
         
+        //THIS IS THE REQUIRE THAT FAILS WHEN IT SHOULDNT WHEN I UNCOMMENT THIS AND DEPLOY/RUN
+        require(msg.sender == owner, "Only owner can lock contract.");
         
-        //require(msg.sender == owner, "Only owner can lock contract.");
         //require(!locked, "Cannot lock contract that is already locked.");
         //require(buyer != address(0),"No buyer to lock.");
         //require(bytes(buyerModelName).length != 0,"No buyerModelName to lock.");
@@ -368,29 +370,29 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         dataAPIFloat[_requestId] = _APIresult;
 
         //If the control of a model is null, then the returned string is empty and has length 0
-        if(callbackCount >= 2 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
+        if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
             attemptCancel(true);
             return;
         }
 
         
-        if(callbackCount == 2)
+        if(callbackCount == 3)
         {
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
             "data.v2UserProfile.totalStake",10**18);
         }
-        else if(callbackCount == 3)
+        else if(callbackCount == 4)
         {
             buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 4)
+        else if(callbackCount == 5)
         {
             sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 5)
+        else if(callbackCount == 6)
         {
             attemptCancel(false);
             return;
