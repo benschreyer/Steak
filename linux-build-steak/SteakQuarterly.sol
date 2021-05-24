@@ -6,6 +6,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+//5/23/2021 DEBUG TIMING CONDITIONS PRESENT NOT FOR REAL USE 
 
 //Last updated 4/1/2021
 //bensch
@@ -18,9 +19,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 pragma solidity ^0.6.0;
 
-import "/sources/chainlink-develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
+import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
 
-import "/sources/SteakQuarterlyUtil.sol";
+import "SteakQuarterlyUtil.sol";
 
 contract SteakQuarterly is ChainlinkClient 
 {
@@ -87,7 +88,7 @@ contract SteakQuarterly is ChainlinkClient
     uint256 public feeInt = 0.1 * 10 ** 18;
     
     //Total fee needed for full contract execution
-    uint256 public totalFee = 3 * feeInt + 2 * feeBytes32;
+    uint256 public totalFee = 4 * feeInt + 2 * feeBytes32;
     
 
     //State variables
@@ -249,7 +250,10 @@ contract SteakQuarterly is ChainlinkClient
 
         
         emit Kicked(buyerModelName);
-
+        
+        LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
+        
+        link.transfer(owner, link.balanceOf(address(this)));
         
         buyer = address(0);
         buyerModelName = "";
@@ -323,8 +327,8 @@ contract SteakQuarterly is ChainlinkClient
         
         require(msg.sender == owner, "Only the owner can trigger a payment claim.");
         require(locked, "Cannot claim an unlocked contract.");
-
-        require(((tempStamp - startTimestamp) / 604800) > 12, "Cannot claim contract before 12 weeks have elapsed.");
+        //DEBUG VERSION SET TO 11 when LAUNCHING
+        require(((tempStamp - startTimestamp) / 604800) > 0, "Cannot claim contract before 12 weeks have elapsed.");
 
         
         emit Claimed();
@@ -334,8 +338,11 @@ contract SteakQuarterly is ChainlinkClient
         link.transfer(owner, link.balanceOf(address(this)));
         
 
-        selfdestruct(owner);
+        owner.transfer(address(this).balance);
 
+        buyer = address(0);
+        buyerModelName = "";
+        startTimestamp = 0;
 
         return true;
     }
@@ -346,7 +353,7 @@ contract SteakQuarterly is ChainlinkClient
     //Get Round number and control, we need these first otherwise behavior of other fetches may be undefined or unceccesary spending of LINK
     function getInitialApiData() private
     {
-        numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
+        
 
         sellerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", sellerModelName,"\"){control}}")),"data.v2UserProfile.control");
 
@@ -362,29 +369,29 @@ contract SteakQuarterly is ChainlinkClient
         dataAPIFloat[_requestId] = _APIresult;
 
         //If the control of a model is null, then the returned string is empty and has length 0
-        if(callbackCount >= 3 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
+        if(callbackCount >= 2 && (bytes(dataAPIString[sellerControlRequestId]).length < 1 || bytes(dataAPIString[buyerControlRequestId]).length < 1))
         {
             attemptCancel(true);
             return;
         }
 
         
-        if(callbackCount == 3)
+        if(callbackCount == 2)
         {
             sellerStakeRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={v2UserProfile(username:\"",sellerModelName,"\"){totalStake}}")),
             "data.v2UserProfile.totalStake",10**18);
         }
-        else if(callbackCount == 4)
+        else if(callbackCount == 3)
         {
             buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 5)
+        else if(callbackCount == 4)
         {
             sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
-        else if(callbackCount == 6)
+        else if(callbackCount == 5)
         {
             attemptCancel(false);
             return;
@@ -401,8 +408,12 @@ contract SteakQuarterly is ChainlinkClient
     function fulfillBytes32(bytes32 _requestId, bytes32 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
         dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
-
-
+        
+        if(callbackCount == 1)
+        {
+            numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
+        }
+        
         callbackCount++;
     }
     
@@ -434,11 +445,10 @@ contract SteakQuarterly is ChainlinkClient
         
         owner.transfer(payout);
         
-        selfdestruct(buyer);
+        buyer.transfer(address(this).balance)
      
         emit Contested();
                 
     }
 
 }
-
