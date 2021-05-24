@@ -161,7 +161,7 @@ contract SteakQuarterly is ChainlinkClient
         require(bytes(_buyerModelName).length != 0,"Model name must not be empy/NULL string.");
         require(bytes(buyerModelName).length == 0, "Model must not already have buyerModelName.");
 
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) > 17) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 0),"Contract can only be entered by buyer between Saturday 18:00 UTC and Sunday 24:00 UTC");      
+        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) > 17) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 0 || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14)),"Contract can only be entered by buyer between Saturday 18:00 UTC and Sunday 24:00 UTC");      
 
 
         buyer = msg.sender;
