@@ -87,7 +87,7 @@ contract SteakQuarterly is ChainlinkClient
     uint256 public feeInt = 0.1 * 10 ** 18;
     
     //Total fee needed for full contract execution
-    uint256 public totalFee = 3 * feeInt + 2 * feeBytes32;
+    uint256 public totalFee = 4 * feeInt + 2 * feeBytes32;
     
 
     //State variables
