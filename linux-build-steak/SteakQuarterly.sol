@@ -19,9 +19,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 pragma solidity ^0.6.0;
 
-import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
+import "/sources/chainlink-develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
 
-import "SteakQuarterlyUtil.sol";
+import "/sources/SteakQuarterlyUtil.sol";
+
 
 contract SteakQuarterly is ChainlinkClient 
 {
@@ -445,10 +446,11 @@ contract SteakQuarterly is ChainlinkClient
         
         owner.transfer(payout);
         
-        buyer.transfer(address(this).balance)
+        buyer.transfer(address(this).balance);
      
         emit Contested();
                 
     }
 
 }
+
