@@ -249,7 +249,10 @@ contract SteakQuarterly is ChainlinkClient
 
         
         emit Kicked(buyerModelName);
-
+        
+        LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
+        
+        link.transfer(owner, link.balanceOf(address(this)));
         
         buyer = address(0);
         buyerModelName = "";
@@ -324,7 +327,7 @@ contract SteakQuarterly is ChainlinkClient
         require(msg.sender == owner, "Only the owner can trigger a payment claim.");
         require(locked, "Cannot claim an unlocked contract.");
 
-        require(((tempStamp - startTimestamp) / 604800) > 12, "Cannot claim contract before 12 weeks have elapsed.");
+        require(((tempStamp - startTimestamp) / 604800) > 1, "Cannot claim contract before 12 weeks have elapsed.");
 
         
         emit Claimed();
@@ -334,8 +337,11 @@ contract SteakQuarterly is ChainlinkClient
         link.transfer(owner, link.balanceOf(address(this)));
         
 
-        selfdestruct(owner);
+        owner.transfer(address(this).balance);
 
+        buyer = address(0);
+        buyerModelName = "";
+        startTimestamp = 0;
 
         return true;
     }
@@ -434,7 +440,7 @@ contract SteakQuarterly is ChainlinkClient
         
         owner.transfer(payout);
         
-        selfdestruct(buyer);
+        buyer.transfer(address(this).balance)
      
         emit Contested();
                 
