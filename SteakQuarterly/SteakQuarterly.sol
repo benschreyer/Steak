@@ -353,7 +353,7 @@ contract SteakQuarterly is ChainlinkClient
     //Get Round number and control, we need these first otherwise behavior of other fetches may be undefined or unceccesary spending of LINK
     function getInitialApiData() private
     {
-        numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
+        
 
         sellerControlRequestId = buildAndSendBytes32Request(string(abi.encodePacked("https://api-tournament.numer.ai/?query={v2UserProfile(username:\"", sellerModelName,"\"){control}}")),"data.v2UserProfile.control");
 
@@ -408,8 +408,12 @@ contract SteakQuarterly is ChainlinkClient
     function fulfillBytes32(bytes32 _requestId, bytes32 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
         dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
-
-
+        
+        if(callbackCount == 1)
+        {
+            numeraiLatestRoundRequestId = buildAndSendIntRequest("https://api-tournament.numer.ai/graphql?query={rounds{number}}","data.rounds.0.number",1);
+        }
+        
         callbackCount++;
     }
     
