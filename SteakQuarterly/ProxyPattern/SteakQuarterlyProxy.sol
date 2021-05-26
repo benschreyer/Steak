@@ -15,11 +15,7 @@ COPYRIGHT BENJAMIN SCHREYER
 
 pragma solidity ^0.6.0;
 
-import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
-import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/interfaces/ENSInterface.sol";
-import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/interfaces/LinkTokenInterface.sol";
-import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/interfaces/ChainlinkRequestInterface.sol";
-import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/interfaces/PointerInterface.sol";
+import "./ChainlinkClientStorage.sol";
 
 
 /**
@@ -29,18 +25,25 @@ import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm
  * It defines a fallback function that delegates all calls to the address
  * returned by the abstract _implementation() internal function.
  */
-contract SteakQuarterlyProxy {
+contract SteakQuarterlyProxy is ChainlinkClientStorage{
     
     
-    //REPLACE WITH KOVAN TESTNET DELEGATE;
-    
-   
+     mapping(bytes32 => int256) private dataAPIFloat;
 
-    address public debugAddr;
-
+    mapping(bytes32 => string) private dataAPIString;
     
     
-
+    event Constructed(string, uint256, uint256);
+  
+    event BuyerModelNameRegistered(string, uint256);
+    
+    event Kicked(string);
+  
+    event Locked(string, string);
+    
+    event Contested();
+    
+    event Claimed();
     
     
     //bensch Kovan Test Network wallet for 1% fee
@@ -91,6 +94,9 @@ contract SteakQuarterlyProxy {
     //State variables
     //locked: buyer cannot be kicked from the contract, contract cannot receive payment, model names cannot be changed. Contract must be locked but unverified for a refund request to go through
     bool public locked;
+
+    //Whether or not constrctor args have been passed
+    bool public initialized = false;
     
 
     //UNIX stamp for contract construction
@@ -103,43 +109,10 @@ contract SteakQuarterlyProxy {
     //Promised model stake by seller, should be a conservative underestimate ie 50% or less of actual stake
     uint256 public sellerStakePromise;
     
-    mapping(bytes32 => int256) private dataAPIFloat;
-
-    mapping(bytes32 => string) private dataAPIString;
-    //Chainlink class fields since this contract isnt ChainlinkClient
-    uint256 constant internal LINK = 10**18;
-    uint256 constant private AMOUNT_OVERRIDE = 0;
-    address constant private SENDER_OVERRIDE = address(0);
-    uint256 constant private ARGS_VERSION = 1;
-    bytes32 constant private ENS_TOKEN_SUBNAME = keccak256("link");
-    bytes32 constant private ENS_ORACLE_SUBNAME = keccak256("oracle");
-    address constant private LINK_TOKEN_POINTER = 0xC89bD4E1632D3A43CB03AAAd5262cbe4038Bc571;
-
-    ENSInterface private ens;
-    bytes32 private ensNode;
-    LinkTokenInterface private link;
-    ChainlinkRequestInterface private oracle;
-    uint256 private requestCount = 1;
-    mapping(bytes32 => address) private pendingRequests;
-
-    event ChainlinkRequested(bytes32 indexed id);
-    event ChainlinkFulfilled(bytes32 indexed id);
-    event ChainlinkCancelled(bytes32 indexed id);
-    //Events
-    event Constructed(string, uint256, uint256);
-  
-    event BuyerModelNameRegistered(string, uint256);
-    
-    event Kicked(string);
-  
-    event Locked(string, string);
-    
-    event Contested();
-    
-    event Claimed();
     
     constructor() public
     {
+        birthStamp = now;
         owner = msg.sender;
     }
     

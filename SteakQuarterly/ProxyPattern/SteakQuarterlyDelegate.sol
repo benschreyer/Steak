@@ -21,7 +21,7 @@ import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm
 
 
 
-contract SteakQuarterly is ChainlinkClient 
+contract SteakQuarterlyDelegate is ChainlinkClient 
 {
     
 
@@ -92,6 +92,9 @@ contract SteakQuarterly is ChainlinkClient
     //State variables
     //locked: buyer cannot be kicked from the contract, contract cannot receive payment, model names cannot be changed. Contract must be locked but unverified for a refund request to go through
     bool public locked;
+
+    //Whether or not constrctor args have been passed
+    bool public initialized = false;
     
 
     //UNIX stamp for contract construction
@@ -113,42 +116,45 @@ contract SteakQuarterly is ChainlinkClient
      
     //Seller of the submission A.K.A. data scientist constructs the contract promising to stake _sellerStakePromise NMR on their submission on _sellerModelName and expects atleast _costETH ethereum for their submission
     //Note 1 Ethereum is represented on the block chain as an unsigned integer with value of 10 ** 18 or 10 ^ 18 or 1000000000000000000, the same is true for LINK and NMR
-    constructor(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public 
+    constructor() public 
     {
 
         birthStamp = now;
 
-        //payout pending must have non 0 value to ensure verification
-        require(_sellerStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
 
-        //state variables
-        locked = false;
-        
-
-        //Store cost and promises by data scientist
-        costETH = _costETH;
-        sellerModelName = _sellerModelName;
-        sellerStakePromise = _sellerStakePromise;
         
 
         //Give ownership to contract creator
         owner = msg.sender;
         
 
-        //Chainlink setup
-        setPublicChainlinkToken();
-        
-
-        emit Constructed(sellerModelName, costETH, sellerStakePromise);
-
     }
     
+    function initialize(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public
+    {
+        //payout pending must have non 0 value to ensure verification
+        require(_sellerStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
+
+        //state variables
+        locked = false;
+
+        initialized = true;        
+
+        //Store cost and promises by data scientist
+        costETH = _costETH;
+        sellerModelName = _sellerModelName;
+        sellerStakePromise = _sellerStakePromise;
+        setPublicChainlinkToken();
+        emit Constructed(sellerModelName, costETH, sellerStakePromise);
+    }
     
     
     
     //Buyer enters agreement to get sellerModelName submissions for the upcoming round by calling this function with atleast costETH payment to be payed to the data scientist upon verification
     function registerBuyerModelName(string memory _buyerModelName) payable public
     {
+        require(initialized,"Contract must be initialized to function");
+
         uint tempStamp = now;
         
         require(msg.sender != owner, "Data scientist can not enter their own contract.");
@@ -158,7 +164,7 @@ contract SteakQuarterly is ChainlinkClient
         require(bytes(_buyerModelName).length != 0,"Model name must not be empy/NULL string.");
         require(bytes(buyerModelName).length == 0, "Model must not already have buyerModelName.");
 
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) > 17) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 0 || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14)),"Contract can only be entered by buyer between Saturday 18:00 UTC and Monday 14:00 UTC");      
+        require((getWeekday(tempStamp) == 6 && getHour(tempStamp) > 17) || (getWeekday(tempStamp) == 0 || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14)),"Contract can only be entered by buyer between Saturday 18:00 UTC and Monday 14:00 UTC");      
 
 
         buyer = msg.sender;
@@ -179,6 +185,7 @@ contract SteakQuarterly is ChainlinkClient
     //Data scientist can kick a user out of a contract if it has not been locked in
     function kick() public returns (bool success)
     {
+        require(initialized,"Contract must be initialized to function");
         uint tempStamp = now;
         
         
@@ -187,7 +194,7 @@ contract SteakQuarterly is ChainlinkClient
         require(buyer != address(0), "No buyer to kick.");
         
         require((tempStamp - startTimestamp) < 158400,"Cannot kick buyer from contract that was entered by buyer over 44 hours ago.");
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 0) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14),"Contract buyer can only be kicked in between Sunday 00:00 UTC and Monday 14:00 UTC");
+        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract buyer can only be kicked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
 
         buyer.transfer(address(this).balance);
@@ -211,6 +218,7 @@ contract SteakQuarterly is ChainlinkClient
     //Locks in the contract, buyer should have already provided data scientist an upload only API key and their model ID 
     function lock() public returns (bool success)
     {
+        require(initialized,"Contract must be initialized to function");
         uint tempStamp = now;
         
         
@@ -220,7 +228,7 @@ contract SteakQuarterly is ChainlinkClient
         require(bytes(buyerModelName).length != 0,"No buyerModelName to lock.");
 
         require((tempStamp - startTimestamp) < 158400,"Cannot lock contract that was entered by buyer over 44 hours ago.");
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 0) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
+        require((getWeekday(tempStamp) == 0) || (getWeekday(tempStamp) == 1 && getHour(tempStamp) < 14),"Contract can only be locked in between Sunday 00:00 UTC and Monday 14:00 UTC");
         
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         require(link.balanceOf(address(this)) >= totalFee, "Contract requires 0.6 LINK total to operate once locked, current LINK balance is under 0.6.");
@@ -238,10 +246,11 @@ contract SteakQuarterly is ChainlinkClient
     //Buyer reclaim ethereum is seller doesnt start the contract
     function reclaim() public returns (bool success)
     {
+        require(initialized,"Contract must be initialized to function");
         uint256 tempStamp = now;
         require(msg.sender == buyer,"Only buyer can reclaim unlocked contract");
         require(!locked,"Cannot reclaim locked contract");
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 1 && SteakQuarterlyUtil.getHour(tempStamp) >= 14) || (tempStamp - startTimestamp) > 172800 || (SteakQuarterlyUtil.getWeekday(tempStamp) == 2), "Can only reclaim after seller lock period");
+        require((getWeekday(tempStamp) == 1 && getHour(tempStamp) >= 14) || (tempStamp - startTimestamp) > 172800 || (getWeekday(tempStamp) == 2), "Can only reclaim after seller lock period");
         
         buyer.transfer(address(this).balance);
         require(address(this).balance == 0, "Failed to return ETH to buyer. Cannot kick.");
@@ -301,12 +310,13 @@ contract SteakQuarterly is ChainlinkClient
     //Attempt to cancel contract early since seller did not submit on time, submitted other predictions, didnt stake
     function contest() public returns (bool success)
     {
+        require(initialized,"Contract must be initialized to function");
         uint tempStamp = now;
         
         require(msg.sender == buyer, "Only the buyer can trigger an audit.");
         require(locked, "Cannot contest an unlocked contract.");
         
-        require((SteakQuarterlyUtil.getWeekday(tempStamp) == 5) || (SteakQuarterlyUtil.getWeekday(tempStamp) == 6 && SteakQuarterlyUtil.getHour(tempStamp) < 18), "Contract reward can only be validated and claimed on Friday, Saturday(Saturday before 18:00 UTC)");
+        require((getWeekday(tempStamp) == 5) || (getWeekday(tempStamp) == 6 && getHour(tempStamp) < 18), "Contract reward can only be validated and claimed on Friday, Saturday(Saturday before 18:00 UTC)");
 
         
         getInitialApiData();
@@ -321,6 +331,7 @@ contract SteakQuarterly is ChainlinkClient
     //Calls a chain of API call functions to confirm submissions are equivalent on buyer and data scientist models and updated for the most recently started round, if they are destroys the contract sending the ETH and leftover LINK to the data scientist, otherwise just send leftover LINK to the data scientist
     function claim() public returns (bool success)
     {
+        require(initialized,"Contract must be initialized to function");
         uint tempStamp = now;
         
         require(msg.sender == owner, "Only the owner can trigger a payment claim.");
@@ -381,12 +392,12 @@ contract SteakQuarterly is ChainlinkClient
         }
         else if(callbackCount == 3)
         {
-            buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
+            buyerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",buyerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
         else if(callbackCount == 4)
         {
-            sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",SteakQuarterlyUtil.uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
+            sellerCorrelationRequestId = buildAndSendIntRequest(string(abi.encodePacked("https://api-tournament.numer.ai/graphql?query={roundSubmissionPerformance(roundNumber:",uintToStr(uint256(dataAPIFloat[numeraiLatestRoundRequestId])),",username:\"",sellerModelName,"\"){roundDailyPerformances{correlation}}}")),
             "data.roundSubmissionPerformance.roundDailyPerformances.-1.correlation",10**18);
         }
         else if(callbackCount == 5)
@@ -405,7 +416,7 @@ contract SteakQuarterly is ChainlinkClient
     //Read in bytes32 from chainlink oracle, log that a callback was received
     function fulfillBytes32(bytes32 _requestId, bytes32 _APIresult) external recordChainlinkFulfillment(_requestId)
     {
-        dataAPIString[_requestId] = SteakQuarterlyUtil.bytes32ToString(_APIresult);
+        dataAPIString[_requestId] = bytes32ToString(_APIresult);
         
         if(callbackCount == 1)
         {
