@@ -132,6 +132,8 @@ contract SteakQuarterlyDelegate is ChainlinkClient
     
     function initialize(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public
     {
+
+        require(msg.sender == owner, "Only owner can initialize");
         //payout pending must have non 0 value to ensure verification
         require(_sellerStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
 
