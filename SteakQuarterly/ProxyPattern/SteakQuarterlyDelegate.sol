@@ -462,26 +462,27 @@ contract SteakQuarterlyDelegate is ChainlinkClient
                 
     }
     
-    //https://ethereum.stackexchange.com/questions/2519/how-to-convert-a-bytes32-to-string
-    function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
+
+    function bytes32ToString(bytes32 b32) public pure returns (string memory) 
+    {
         uint8 i = 0;
-        while(i < 32 && _bytes32[i] != 0) {
+        while(i < 32 && b32[i] != 0) 
+        {
             i++;
         }
         bytes memory bytesArray = new bytes(i);
-        for (i = 0; i < 32 && _bytes32[i] != 0; i++) {
-            bytesArray[i] = _bytes32[i];
+        for (i = 0; i < 32 && b32[i] != 0; i++) 
+        {
+            bytesArray[i] = b32[i];
         }
         return string(bytesArray);
     }
 
     
-        /// @notice converts number to string
-    /// @dev source: https://github.com/provable-things/ethereum-api/blob/master/oraclizeAPI_0.5.sol#L1045
-    /// @param _i integer to convert
-    /// @return _uintAsString
-    function uintToStr(uint _i) public pure returns (string memory _uintAsString) {
-        uint number = _i;
+
+    function uintToStr(uint it) public pure returns (string memory _uintAsString) 
+    {
+        uint number = it;
         if (number == 0) {
             return "0";
         }
@@ -500,10 +501,7 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         return string(bstr);
     }
     
-     /*
-         *  Date and Time utilities for ethereum contracts
-         * https://github.com/pipermerriam/ethereum-datetime/blob/master/contracts/DateTime.sol
-         */
+
 
 
         uint constant DAY_IN_SECONDS = 86400;
@@ -511,19 +509,23 @@ contract SteakQuarterlyDelegate is ChainlinkClient
 
 
 
-        function getHour(uint timestamp) public pure returns (uint) {
+        function getHour(uint timestamp) public pure returns (uint) 
+        {
                 return uint((timestamp / 60 / 60) % 24);
         }
 
-        function getMinute(uint timestamp) public pure returns (uint) {
+        function getMinute(uint timestamp) public pure returns (uint) 
+        {
                 return uint((timestamp / 60) % 60);
         }
 
-        function getSecond(uint timestamp) public pure returns (uint) {
+        function getSecond(uint timestamp) public pure returns (uint) 
+        {
                 return uint(timestamp % 60);
         }
 
-        function getWeekday(uint timestamp) public pure returns (uint) {
+        function getWeekday(uint timestamp) public pure returns (uint) 
+        {
                 return uint((timestamp / DAY_IN_SECONDS + 4) % 7);
         }
     
