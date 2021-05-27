@@ -205,7 +205,7 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
 
 
     //Send a chainlink request for a signed int with a URL, json path, and multiplication to remove n decimal places
-    function buildAndSendIntRequest(string memory get, string memory path, int256 times) private returns (bytes32 requestId)
+    function buildAndSendIntRequest(string memory get, string memory path, int256 times) internal returns (bytes32 requestId)
     {
         Chainlink.Request memory ret = buildChainlinkRequest(jobIdInt, address(this), this.fulfillInt.selector);
 
@@ -222,7 +222,7 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
 
 
     //Send a chainlink request for a string
-    function buildAndSendBytes32Request(string memory get, string memory path) private returns (bytes32 requestId)
+    function buildAndSendBytes32Request(string memory get, string memory path) internal returns (bytes32 requestId)
     {
         Chainlink.Request memory ret = buildChainlinkRequest(jobIdBytes32, address(this), this.fulfillBytes32.selector);
 
@@ -297,7 +297,7 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
 
 
     //Get Round number and control, we need these first otherwise behavior of other fetches may be undefined or unceccesary spending of LINK
-    function getInitialApiData() private
+    function getInitialApiData() internal
     {
         
 
@@ -367,7 +367,7 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
 
 
     //Final step, check if contract was broken (will have checked true if attempt cancel resulted from the seller not submitting on time or not staking)
-    function attemptCancel(bool checked) private
+    function attemptCancel(bool checked) internal
     {
         callbackCount = 0;
 
