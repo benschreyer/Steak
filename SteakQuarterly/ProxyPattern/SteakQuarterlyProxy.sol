@@ -93,7 +93,7 @@ contract SteakQuarterlyProxy is ChainlinkClientStorage{
 
     //State variables
     //locked: buyer cannot be kicked from the contract, contract cannot receive payment, model names cannot be changed. Contract must be locked but unverified for a refund request to go through
-    bool public locked;
+    bool public locked = false;
 
     //Whether or not constrctor args have been passed
     bool public initialized = false;

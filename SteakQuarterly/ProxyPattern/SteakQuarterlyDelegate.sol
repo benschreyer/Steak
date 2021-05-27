@@ -91,7 +91,7 @@ contract SteakQuarterlyDelegate is ChainlinkClient
 
     //State variables
     //locked: buyer cannot be kicked from the contract, contract cannot receive payment, model names cannot be changed. Contract must be locked but unverified for a refund request to go through
-    bool public locked;
+    bool public locked = false;
 
     //Whether or not constrctor args have been passed
     bool public initialized = false;
@@ -133,6 +133,7 @@ contract SteakQuarterlyDelegate is ChainlinkClient
     function initialize(string memory _sellerModelName, uint256 _costETH,uint256 _sellerStakePromise) public
     {
 
+        require(!locked && !initialized, "Cannot initialize a locked or initialized contract");
         require(msg.sender == owner, "Only owner can initialize");
         //payout pending must have non 0 value to ensure verification
         require(_sellerStakePromise >= 10000000000000000,"Data scientist must stake atleast 0.01 NMR for verification purposes");
@@ -268,6 +269,13 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         buyerModelName = "";
         startTimestamp = 0;
 
+        sellerModelName = "";
+        sellerStakePromise = 1000000000000;
+        costETH = 1000000000000;
+
+        locked = false;
+        initialized = false;
+
         
         return true;
 
@@ -354,6 +362,13 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         buyer = address(0);
         buyerModelName = "";
         startTimestamp = 0;
+
+        sellerModelName = "";
+        sellerStakePromise = 1000000000000;
+        costETH = 1000000000000;
+
+        locked = false;
+        initialized = false;
 
         return true;
     }
@@ -461,6 +476,13 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         buyer = address(0);
         buyerModelName = "";
         startTimestamp = 0;
+
+        sellerModelName = "";
+        sellerStakePromise = 1000000000000;
+        costETH = 1000000000000;
+
+        locked = false;
+        initialized = false;
      
         emit Contested();
                 
