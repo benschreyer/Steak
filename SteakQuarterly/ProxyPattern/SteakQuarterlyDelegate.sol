@@ -457,6 +457,10 @@ contract SteakQuarterlyDelegate is ChainlinkClient
         owner.transfer(payout);
         
         buyer.transfer(address(this).balance);
+        
+        buyer = address(0);
+        buyerModelName = "";
+        startTimestamp = 0;
      
         emit Contested();
                 
