@@ -17,19 +17,19 @@ contract ChainlinkClientStorage {
 
 
   uint256 constant internal LINK = 10**18;
-  uint256 constant private AMOUNT_OVERRIDE = 0;
-  address constant private SENDER_OVERRIDE = address(0);
-  uint256 constant private ARGS_VERSION = 1;
-  bytes32 constant private ENS_TOKEN_SUBNAME = keccak256("link");
-  bytes32 constant private ENS_ORACLE_SUBNAME = keccak256("oracle");
-  address constant private LINK_TOKEN_POINTER = 0xC89bD4E1632D3A43CB03AAAd5262cbe4038Bc571;
+  uint256 constant internal AMOUNT_OVERRIDE = 0;
+  address constant internal SENDER_OVERRIDE = address(0);
+  uint256 constant internal ARGS_VERSION = 1;
+  bytes32 constant internal ENS_TOKEN_SUBNAME = keccak256("link");
+  bytes32 constant internal ENS_ORACLE_SUBNAME = keccak256("oracle");
+  address constant internal LINK_TOKEN_POINTER = 0xC89bD4E1632D3A43CB03AAAd5262cbe4038Bc571;
 
-  ENSInterface private ens;
-  bytes32 private ensNode;
-  LinkTokenInterface private link;
-  ChainlinkRequestInterface private oracle;
-  uint256 private requestCount = 1;
-  mapping(bytes32 => address) private pendingRequests;
+  ENSInterface internal ens;
+  bytes32 internal ensNode;
+  LinkTokenInterface internal link;
+  ChainlinkRequestInterface internal oracle;
+  uint256 internal requestCount = 1;
+  mapping(bytes32 => address) internal pendingRequests;
 
 
 }
