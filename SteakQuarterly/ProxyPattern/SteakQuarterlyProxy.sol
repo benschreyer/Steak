@@ -39,7 +39,7 @@ contract SteakQuarterlyProxy is SteakStorage, ChainlinkClientStorage
      * Implemented entirely in `_fallback`.
      */
     fallback () payable external {
-        _fallback();
+        _delegate();
     }
 
     /**
@@ -47,7 +47,7 @@ contract SteakQuarterlyProxy is SteakStorage, ChainlinkClientStorage
      * Implemented entirely in `_fallback`.
      */
     receive () payable external {
-        _fallback();
+        _delegate();
     }
 
     /**
@@ -86,20 +86,5 @@ contract SteakQuarterlyProxy is SteakStorage, ChainlinkClientStorage
         }
     }
 
-    /**
-     * @dev Function that is run as the first thing in the fallback function.
-     * Can be redefined in derived contracts to add functionality.
-     * Redefinitions must call super._willFallback().
-     */
-    function _willFallback() internal virtual {
-    }
 
-    /**
-     * @dev fallback implementation.
-     * Extracted to enable manual triggering.
-     */
-    function _fallback() internal {
-        _willFallback();
-        _delegate();
-    }
 }
