@@ -67,8 +67,27 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
         costETH = _costETH;
         sellerModelName = _sellerModelName;
         sellerStakePromise = _sellerStakePromise;
-        setPublicChainlinkToken();
-        emit Constructed(sellerModelName, costETH, sellerStakePromise);
+        
+        if(firstUse)
+        {
+            setPublicChainlinkToken();
+            emit Constructed(sellerModelName, costETH, sellerStakePromise);
+        }
+        else
+        {
+            emit Reused();
+        }
+        
+        firstUse = false;
+    }
+    
+    function reuse()
+    {
+        require(!firstUse,"Must initialize with arguments for first initialization");
+        locked = false;
+
+        initialized = true;
+        emit Reused();
     }
     
     
@@ -283,9 +302,6 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
         buyerModelName = "";
         startTimestamp = 0;
 
-        sellerModelName = "";
-        sellerStakePromise = 1000000000000;
-        costETH = 1000000000000;
 
         locked = false;
         initialized = false;
@@ -397,9 +413,6 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
         buyerModelName = "";
         startTimestamp = 0;
 
-        sellerModelName = "";
-        sellerStakePromise = 1000000000000;
-        costETH = 1000000000000;
 
         locked = false;
         initialized = false;
