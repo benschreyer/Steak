@@ -24,6 +24,8 @@ contract SteakStorage {
     
     event Claimed();
     
+    event Reused();
+    
     
     //bensch Kovan Test Network wallet for 1% fee
     address payable public bensch = 0xa9187C8C9f692Fe2ca6b80069e87dF23b34157A3;
@@ -76,7 +78,9 @@ contract SteakStorage {
 
     //Whether or not constrctor args have been passed
     bool public initialized = false;
-    
+
+    //Whether the contract has been initialized before
+    bool internal firstUse = true;
 
     //UNIX stamp for contract construction
     uint public birthStamp;
