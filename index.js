@@ -414,12 +414,8 @@ function deploy() {
         from: account,
         data: bcr
     });
-    dSMN = $("#dataScientistModelNameInput").val().trim();
-    sP = new BigNumber($("#dataScientistStakePromiseInput").val().trim()).shiftedBy(18);
-    cE = new BigNumber($("#costETHInput").val().trim()).shiftedBy(18);
     toDeploy.deploy({
         data: bcr,
-        arguments: [dSMN, cE, sP]
     }).send({
         from: account
     }).then(
@@ -434,6 +430,32 @@ function deploy() {
             retreiveContract();
         }
     );
+}
+
+function initialize() {
+    if (!setUpCheck(false)) {
+        return;
+    }
+
+    actionDesc = "Initialize Contract.";
+    //print(contract,"IMPORTANT CONTRACT");
+    toTransact = contract.methods.initialize($("#dataScientistModelNameInput").val().trim(),new BigNumber($("#dataScientistStakePromiseInput").val().trim()).shiftedBy(18), new BigNumber($("#costETHInput").val().trim()).shiftedBy(18));
+    gasEstimateCheckModalWrapper(toTransact, function() {
+        contract.methods.costETH().call().then(function(info) {
+            sendWrapper(toTransact, {
+                from: account,
+                value: info
+            }, actionDesc);
+
+
+
+            //document.getElementById('costETHLabel').className = document.getElementById('costETHLabel').className +  " text-success";
+        });
+
+    });
+
+
+
 }
 
 function highlightCalendarColumn(selectedCol)

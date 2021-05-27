@@ -25,7 +25,8 @@ import "./ChainlinkClientStorage.sol";
  * It defines a fallback function that delegates all calls to the address
  * returned by the abstract _implementation() internal function.
  */
-contract SteakQuarterlyProxy is ChainlinkClientStorage{
+contract SteakQuarterlyProxy is ChainlinkClientStorage
+{
     
     
      mapping(bytes32 => int256) private dataAPIFloat;
