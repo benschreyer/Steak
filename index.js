@@ -436,23 +436,42 @@ function initialize() {
     if (!setUpCheck(false)) {
         return;
     }
+    if($("#dataScientistModelNameInput").val().trim().length < 1 && $("#costETHInput").val().trim().length < 1 && $("#dataScientistStakePromiseInput").val().trim().length < 1)
+    {
+        actionDesc = "Reuse Contract.";
+        //print(contract,"IMPORTANT CONTRACT");
+        toTransact = contract.methods.reuse();
+        gasEstimateCheckModalWrapper(toTransact, function() {
+            
+                sendWrapper(toTransact, {
+                    from: account,
+                }, actionDesc);
 
-    actionDesc = "Initialize Contract.";
-    //print(contract,"IMPORTANT CONTRACT");
-    toTransact = contract.methods.initialize($("#dataScientistModelNameInput").val().trim(),new BigNumber($("#dataScientistStakePromiseInput").val().trim()).shiftedBy(18), new BigNumber($("#costETHInput").val().trim()).shiftedBy(18));
-    gasEstimateCheckModalWrapper(toTransact, function() {
-        contract.methods.costETH().call().then(function(info) {
-            sendWrapper(toTransact, {
-                from: account,
-                value: info
-            }, actionDesc);
 
 
+                //document.getElementById('costETHLabel').className = document.getElementById('costETHLabel').className +  " text-success";
 
-            //document.getElementById('costETHLabel').className = document.getElementById('costETHLabel').className +  " text-success";
+
         });
+    }
+    else
+    {
+        actionDesc = "Initialize Contract.";
+        //print(contract,"IMPORTANT CONTRACT");
+        toTransact = contract.methods.initialize($("#dataScientistModelNameInput").val().trim(), new BigNumber($("#costETHInput").val().trim()).shiftedBy(18),new BigNumber($("#dataScientistStakePromiseInput").val().trim()).shiftedBy(18));
+        gasEstimateCheckModalWrapper(toTransact, function() {
 
-    });
+                sendWrapper(toTransact, {
+                    from: account,
+                }, actionDesc);
+
+
+
+                //document.getElementById('costETHLabel').className = document.getElementById('costETHLabel').className +  " text-success";
+
+
+        });
+    }
 
 
 
