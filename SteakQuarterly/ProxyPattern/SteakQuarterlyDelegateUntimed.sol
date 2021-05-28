@@ -1,4 +1,4 @@
-
+ 
 /*
 DO NOT COPY OR REPRODUCE THESE WORKS WITHOUT THE WRITTEN PERMISSION FROM BENJAMIN SCHREYER
 COPYRIGHT BENJAMIN SCHREYER
@@ -81,11 +81,12 @@ contract SteakQuarterlyUntimed is SteakStorage, ChainlinkClient
         firstUse = false;
     }
     
-    function reuse()
+    function reuse() public
     {
         require(msg.sender == owner, "Only owner can reuse");
         require(!firstUse,"Must initialize with arguments for first initialization.");
         require(!locked,"Cannot reuse locked contract.");
+        require(!initialized,"Cannot reinitialize contract.")
 
         initialized = true;
         emit Reused();
