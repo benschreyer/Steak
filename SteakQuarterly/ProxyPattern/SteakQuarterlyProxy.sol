@@ -16,7 +16,7 @@ COPYRIGHT BENJAMIN SCHREYER
 pragma solidity ^0.6.0;
 
 import "./ChainlinkClientStorage.sol";
-import "./SteakStorage.sol"
+import "./SteakStorage.sol";
 
 /**
  * @title Proxy
