@@ -17,7 +17,7 @@ COPYRIGHT BENJAMIN SCHREYER
 pragma solidity ^0.6.0;
 
 import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
-import "./SteakStorage.sol"
+import "./SteakStorage.sol";
 
 
 
@@ -83,6 +83,7 @@ contract SteakQuarterlyUntimed is SteakStorage, ChainlinkClient
     
     function reuse()
     {
+        require(msg.sender == owner, "Only owner can reuse");
         require(!firstUse,"Must initialize with arguments for first initialization.");
         require(!locked,"Cannot reuse locked contract.");
 
