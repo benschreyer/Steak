@@ -21,7 +21,7 @@ import "./SteakStorage.sol";
 
 
 
-contract SteakQuarterlyUntimed is SteakStorage, ChainlinkClient
+contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
 {
     
 
@@ -86,7 +86,7 @@ contract SteakQuarterlyUntimed is SteakStorage, ChainlinkClient
         require(msg.sender == owner, "Only owner can reuse");
         require(!firstUse,"Must initialize with arguments for first initialization.");
         require(!locked,"Cannot reuse locked contract.");
-        require(!initialized,"Cannot reinitialize contract.")
+        require(!initialized,"Cannot reinitialize contract.");
 
         initialized = true;
         emit Reused();
