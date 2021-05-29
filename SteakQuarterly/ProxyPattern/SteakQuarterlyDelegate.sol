@@ -288,7 +288,7 @@ contract SteakQuarterlyUntimed is SteakStorage, ChainlinkClient
         require(msg.sender == owner, "Only the owner can trigger a payment claim.");
         require(locked, "Cannot claim an unlocked contract.");
         //DEBUG VERSION SET TO 11 when LAUNCHING
-        require(((tempStamp - startTimestamp) / 604800) > 0, "Cannot claim contract before 12 weeks have elapsed.");
+        require(((tempStamp - startTimestamp) / 604800) > 1, "Cannot claim contract before 12 weeks have elapsed.");
 
         
         emit Claimed();
