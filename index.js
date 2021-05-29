@@ -301,7 +301,7 @@ function registerBuyerName() {
 
     actionDesc = "Register Buyer Name.";
     print(contract,"IMPORTANT CONTRACT");
-    toTransact = contract.methods.registerBuyerModelName($("#buyerModelNameInput").val().trim());
+    toTransact = contract.methods.registerBuyerModelName($("#buyerModelNameInput").val().trim().toLowerCase());
     gasEstimateCheckModalWrapper(toTransact, function() {
         contract.methods.costETH().call().then(function(info) {
             sendWrapper(toTransact, {
@@ -458,7 +458,7 @@ function initialize() {
     {
         actionDesc = "Initialize Contract.";
         //print(contract,"IMPORTANT CONTRACT");
-        toTransact = contract.methods.initialize($("#dataScientistModelNameInput").val().trim(), new BigNumber($("#costETHInput").val().trim()).shiftedBy(18),new BigNumber($("#dataScientistStakePromiseInput").val().trim()).shiftedBy(18));
+        toTransact = contract.methods.initialize($("#dataScientistModelNameInput").val().trim().toLowerCase(), new BigNumber($("#costETHInput").val().trim()).shiftedBy(18),new BigNumber($("#dataScientistStakePromiseInput").val().trim()).shiftedBy(18));
         gasEstimateCheckModalWrapper(toTransact, function() {
 
                 sendWrapper(toTransact, {
