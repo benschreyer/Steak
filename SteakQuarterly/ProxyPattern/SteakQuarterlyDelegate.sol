@@ -1,4 +1,4 @@
-
+ 
 /*
 DO NOT COPY OR REPRODUCE THESE WORKS WITHOUT THE WRITTEN PERMISSION FROM BENJAMIN SCHREYER
 COPYRIGHT BENJAMIN SCHREYER
@@ -17,11 +17,11 @@ COPYRIGHT BENJAMIN SCHREYER
 pragma solidity ^0.6.0;
 
 import "https://raw.githubusercontent.com/smartcontractkit/chainlink/develop/evm-contracts/src/v0.6/ChainlinkClient.sol";
-import "./SteakStorage.sol"
+import "./SteakStorage.sol";
 
 
 
-contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
+contract SteakQuarterlyUntimed is SteakStorage, ChainlinkClient
 {
     
 
@@ -81,10 +81,12 @@ contract SteakQuarterlyDelegate is SteakStorage, ChainlinkClient
         firstUse = false;
     }
     
-    function reuse()
+    function reuse() public
     {
-        require(!firstUse,"Must initialize with arguments for first initialization");
-        locked = false;
+        require(msg.sender == owner, "Only owner can reuse");
+        require(!firstUse,"Must initialize with arguments for first initialization.");
+        require(!locked,"Cannot reuse locked contract.");
+        require(!initialized,"Cannot reinitialize contract.")
 
         initialized = true;
         emit Reused();
