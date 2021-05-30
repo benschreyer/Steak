@@ -270,7 +270,9 @@ function sendWrapper(method, options) {
 function gasEstimateCheckModalWrapper(method, runIfAlternate) {
      var caught = false;
     method.estimateGas().catch(function(error) {
+        console.log("ERROR!");
         console.log(error);
+        console.log("ERROR!");
         caught = true;
         $('#gasEstimationFailedModal').modal().on('hidden.bs.modal', function(e) {
             console.log("closed");
