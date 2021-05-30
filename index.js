@@ -274,6 +274,7 @@ function gasEstimateCheckModalWrapper(method, runIfAlternate) {
         console.log(error);
         console.log("ERROR!");
         caught = true;
+        console.log(result);
         if (!error || result < 1180000) 
         {
             runIfAlternate();
