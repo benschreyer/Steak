@@ -269,11 +269,18 @@ function sendWrapper(method, options) {
 
 function gasEstimateCheckModalWrapper(method, runIfAlternate) {
      var caught = false;
-    method.estimateGas().catch(function(error) {
+    method.estimateGas(function(error,result) {
         console.log("ERROR!");
         console.log(error);
         console.log("ERROR!");
         caught = true;
+        if (!error || result < 1180000) 
+        {
+            runIfAlternate();
+        }
+        
+        else
+        {
         $('#gasEstimationFailedModal').modal().on('hidden.bs.modal', function(e) {
             console.log("closed");
             if (!modalDecision) {
@@ -282,17 +289,9 @@ function gasEstimateCheckModalWrapper(method, runIfAlternate) {
             }
             modalDecision = true;
         });
-
-    }).then(
-        
-        function() {
-          if(caught)
-          {
-            return;
-          }
-            runIfAlternate();
         }
-    );
+
+    })
 }
 
 
