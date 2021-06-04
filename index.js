@@ -269,7 +269,7 @@ function sendWrapper(method, options) {
 
 function gasEstimateCheckModalWrapper(method, runIfAlternate) {
      var caught = false;
-    method.estimateGas({gas: 1180000},function(error,result) {
+    method.estimateGas(function(error,result) {
         console.log("ERROR!");
         console.log(error);
         console.log("ERROR!");
